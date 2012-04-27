@@ -1,0 +1,95 @@
+<% if @prev or @next: %>
+  <nav>
+    <% if @prev: %>
+      <a href="/#/<%= @channel.slug %>/show:<%= @prev.id %>">Previous</a>
+    <% end %>
+    <% if @channel.mode: %>
+      <a href="/#/<%= @channel.slug %>/mode:<%= @channel.mode %>">Up</a>
+    <% else: %>
+      <a href="/#/<%= @channel.slug %>">Up</a>
+    <% end %>
+    <% if @next: %>
+      <a href="/#/<%= @channel.slug %>/show:<%= @next.id %>">Next</a>
+    <% end %>
+  </nav>
+<% end %>
+
+<div id="block_<%= @block.id %>" class="full <%= @block.block_type.toLowerCase() %>" data-type="<%= @block.block_type %>">
+
+  <!-- TYPE-SPECIFIC OUTPUT: -->
+  <% if @block.block_type is 'Media': %>
+    <!-- MEDIA -->
+    <div class="embed">
+      <% if @block.embed_html: %>
+        <%- @block.embed_html %>
+      <% else: %>
+        <a href="<%= @block.embed_source_url %>" class="url external">
+          <%= @block.embed_source_url %>
+        </a>
+      <% end %>
+    </div>
+  <% else if @block.block_type is 'Image': %>
+    <!-- IMAGE -->
+    <a href="<%= @block.image_original %>" class="enlarge">
+      <img src="<%= @block.image_display %>" alt="<%= @block.title %>" />
+    </a>
+  <% else if @block.block_type is 'Link': %>
+    <!-- LINK -->
+    <% if @block.image_display: %>
+      <a href="<%= @block.link_url %>" class="external" target="_blank">
+        <img src="<%= @block.image_display %>" alt="<%= @block.title %>" />
+      </a>
+    <% else: %>
+      <p>
+        <a href="<%= @block.link_url %>" class="external url" target="_blank"><%= @block.link_url %></a>
+      </p>
+    <% end %>
+  <% else if @block.block_type is 'Text': %>
+    <!-- TEXT -->
+    <div class="content">
+      <%- @block.content %>
+    </div>
+  <% end %>
+
+  <!-- UNIVERSAL OUTPUT: -->
+  <div class="metadata">
+    <h3 class="title">
+      <a href="/#/<%= @channel.slug %>/show:<%= @block.id %>">
+      <% if @block.title: %>
+        <%= @block.title %>
+      <% else: %>
+        Untitled
+      <% end %>
+      </a>
+    </h3>
+
+    <% unless @block.block_type is 'Text' or !@block.content: %>
+      <div class="description">
+        <div class="content">
+          <%- @block.content %>
+        </div>
+      </div>
+    <% end %>
+
+    <dl class='small meta block_meta'>
+      <% if @block.link_url: %>
+        <dt>URL:</dt>
+        <dd><a href="<%= @block.link_url %>" target="_blank"><%= @block.link_url %></a></dd>
+      <% end %>
+
+      <% if @block.image_remote_url: %>
+        <dt>Source:</dt>
+        <dd><a href="<%= @block.image_remote_url %>" class="url external" target="_blank"><%= @block.image_remote_url %></a></dd>
+      <% end %>
+      
+      <% if @block.embed_source_url: %>
+        <dt>Source:</dt>
+        <dd><a href="<%= @block.embed_source_url %>" class="url external" target="_blank"><%= @block.embed_source_url %></a></dd>
+      <% end %>
+
+      <dt>Added by:</dt>
+      <dd><%= @block.username %></dd>
+    </dl>
+  </div>
+  
+</div><!-- #block -->

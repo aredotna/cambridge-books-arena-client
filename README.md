@@ -1,2 +1,1 @@
-cambridge-books-arena-client
-============================
+The précis began with a long hold on a color still that Case at first assumed was a collage of some kind, a boy's face snipped from another image and glued to a photograph of a paint-scrawled wall. Dark eyes, epicanthic folds obviously the result of surgery, an angry dusting of acne across pale narrow cheeks. The Hosaka released the freeze; the boy moved, flowing with the sinister grace of a mime pretending to be a jungle predator. His body was nearly invisible, an abstract pattern approximating the scribbled brickwork sliding smoothly across his tight one piece. Mimetic polycarbon.
