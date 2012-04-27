@@ -2,6 +2,7 @@ class exports.Block extends Backbone.Model
   initialize: ->
     @checkIfMissingImage()
     @channelConnection()
+    console.log('here', @)
     
   checkIfMissingImage: ->
     # Check if the image actually is missing

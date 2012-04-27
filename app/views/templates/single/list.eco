@@ -49,47 +49,11 @@
     <div class="content">
       <%- @block.content %>
     </div>
+
+  <% else if @block.block_type is 'Channel': %>
+    <!-- TEXT -->
+      <%- console.log('Channel', @block) %>
+      <a href="#/<%= @block.slug %>"><%- @block.title %></a>
   <% end %>
-
-  <!-- UNIVERSAL OUTPUT: -->
-  <div class="metadata">
-    <h3 class="title">
-      <a href="/#/<%= @channel.slug %>/show:<%= @block.id %>">
-      <% if @block.title: %>
-        <%= @block.title %>
-      <% else: %>
-        Untitled
-      <% end %>
-      </a>
-    </h3>
-
-    <% unless @block.block_type is 'Text' or !@block.content: %>
-      <div class="description">
-        <div class="content">
-          <%- @block.content %>
-        </div>
-      </div>
-    <% end %>
-
-    <dl class='small meta block_meta'>
-      <% if @block.link_url: %>
-        <dt>URL:</dt>
-        <dd><a href="<%= @block.link_url %>" target="_blank"><%= @block.link_url %></a></dd>
-      <% end %>
-
-      <% if @block.image_remote_url: %>
-        <dt>Source:</dt>
-        <dd><a href="<%= @block.image_remote_url %>" class="url external" target="_blank"><%= @block.image_remote_url %></a></dd>
-      <% end %>
-      
-      <% if @block.embed_source_url: %>
-        <dt>Source:</dt>
-        <dd><a href="<%= @block.embed_source_url %>" class="url external" target="_blank"><%= @block.embed_source_url %></a></dd>
-      <% end %>
-
-      <dt>Added by:</dt>
-      <dd><%= @block.username %></dd>
-    </dl>
-  </div>
   
 </div><!-- #block -->

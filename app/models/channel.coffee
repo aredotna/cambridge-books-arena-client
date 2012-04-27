@@ -1,6 +1,10 @@
 {Blocks} = require 'collections/blocks'
 
 class exports.Channel extends Backbone.Model
+
+  initialize: ->
+    console.log('the channel', @)
+
   url: ->
     "http://are.na/api/v1/channels/#{@get('slug')}.json?callback=?"
 
@@ -22,4 +26,5 @@ class exports.Channel extends Backbone.Model
           console.log "Error: #{error}"
 
   setupBlocks: ->
-    @blocks = new Blocks(@get('blocks'))
+    @contents = new Blocks(@get('blocks'))
+    @contents.add(@get('channels'))

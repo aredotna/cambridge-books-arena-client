@@ -184,7 +184,8 @@
 
     Block.prototype.initialize = function() {
       this.checkIfMissingImage();
-      return this.channelConnection();
+      this.channelConnection();
+      return console.log('here', this);
     };
 
     Block.prototype.checkIfMissingImage = function() {
@@ -227,6 +228,10 @@
       Channel.__super__.constructor.apply(this, arguments);
     }
 
+    Channel.prototype.initialize = function() {
+      return console.log('the channel', this);
+    };
+
     Channel.prototype.url = function() {
       return "http://are.na/api/v1/channels/" + (this.get('slug')) + ".json?callback=?";
     };
@@ -255,7 +260,8 @@
     };
 
     Channel.prototype.setupBlocks = function() {
-      return this.blocks = new Blocks(this.get('blocks'));
+      this.contents = new Blocks(this.get('blocks'));
+      return this.contents.add(this.get('channels'));
     };
 
     return Channel;
@@ -302,7 +308,8 @@
 
     MainRouter.prototype.collection = function(slug, mode) {
       var _this = this;
-      if (mode == null) mode = 'grid';
+      if (mode == null) mode = 'list';
+      if (slug == null) slug = "mit-office-e14-140s";
       this.channel.set({
         'mode': 'mode',
         mode: mode
@@ -310,7 +317,7 @@
       return $.when(this.channel.maybeLoad(slug)).then(function() {
         _this.collectionView = new CollectionView({
           model: _this.channel,
-          collection: _this.channel.blocks,
+          collection: _this.channel.contents,
           mode: mode
         });
         return $('body').attr('class', 'collection').html(_this.collectionView.render().el);
@@ -321,8 +328,8 @@
       var _this = this;
       return $.when(this.channel.maybeLoad(slug)).then(function() {
         _this.singleView = new SingleView({
-          model: _this.channel.blocks.get(id),
-          collection: _this.channel.blocks,
+          model: _this.channel.contents.get(id),
+          collection: _this.channel.contents,
           channel: _this.channel
         });
         return $('body').attr('class', 'single').html(_this.singleView.render().el);
@@ -517,11 +524,11 @@
   (function() {
     (function() {
     
-      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="grid"></div>\n<h1>');
+      __out.push('<h1>');
     
       __out.push(__sanitize(this.channel.title));
     
-      __out.push('</h1>');
+      __out.push('</h1>\n<div id="modal" class="hide"></div>\n<div id="blocks" class="grid"></div>\n');
     
     }).call(this);
     
@@ -573,11 +580,11 @@
   (function() {
     (function() {
     
-      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n<h1>');
+      __out.push('<h1>');
     
       __out.push(__sanitize(this.channel.title));
     
-      __out.push('</h1>');
+      __out.push('</h1>\n<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
     
     }).call(this);
     
@@ -798,70 +805,18 @@
       } else if (this.block.block_type === 'Text') {
         __out.push('\n    <!-- TEXT -->\n    <div class="content">\n      ');
         __out.push(this.block.content);
-        __out.push('\n    </div>\n  ');
+        __out.push('\n    </div>\n\n  ');
+      } else if (this.block.block_type === 'Channel') {
+        __out.push('\n    <!-- TEXT -->\n      ');
+        __out.push(console.log('Channel', this.block));
+        __out.push('\n      <a href="#/');
+        __out.push(__sanitize(this.block.slug));
+        __out.push('">');
+        __out.push(this.block.title);
+        __out.push('</a>\n  ');
       }
     
-      __out.push('\n\n  <!-- UNIVERSAL OUTPUT: -->\n  <div class="metadata">\n    <h3 class="title">\n      <a href="/#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('/show:');
-    
-      __out.push(__sanitize(this.block.id));
-    
-      __out.push('">\n      ');
-    
-      if (this.block.title) {
-        __out.push('\n        ');
-        __out.push(__sanitize(this.block.title));
-        __out.push('\n      ');
-      } else {
-        __out.push('\n        Untitled\n      ');
-      }
-    
-      __out.push('\n      </a>\n    </h3>\n\n    ');
-    
-      if (!(this.block.block_type === 'Text' || !this.block.content)) {
-        __out.push('\n      <div class="description">\n        <div class="content">\n          ');
-        __out.push(this.block.content);
-        __out.push('\n        </div>\n      </div>\n    ');
-      }
-    
-      __out.push('\n\n    <dl class=\'small meta block_meta\'>\n      ');
-    
-      if (this.block.link_url) {
-        __out.push('\n        <dt>URL:</dt>\n        <dd><a href="');
-        __out.push(__sanitize(this.block.link_url));
-        __out.push('" target="_blank">');
-        __out.push(__sanitize(this.block.link_url));
-        __out.push('</a></dd>\n      ');
-      }
-    
-      __out.push('\n\n      ');
-    
-      if (this.block.image_remote_url) {
-        __out.push('\n        <dt>Source:</dt>\n        <dd><a href="');
-        __out.push(__sanitize(this.block.image_remote_url));
-        __out.push('" class="url external" target="_blank">');
-        __out.push(__sanitize(this.block.image_remote_url));
-        __out.push('</a></dd>\n      ');
-      }
-    
-      __out.push('\n      \n      ');
-    
-      if (this.block.embed_source_url) {
-        __out.push('\n        <dt>Source:</dt>\n        <dd><a href="');
-        __out.push(__sanitize(this.block.embed_source_url));
-        __out.push('" class="url external" target="_blank">');
-        __out.push(__sanitize(this.block.embed_source_url));
-        __out.push('</a></dd>\n      ');
-      }
-    
-      __out.push('\n\n      <dt>Added by:</dt>\n      <dd>');
-    
-      __out.push(__sanitize(this.block.username));
-    
-      __out.push('</dd>\n    </dl>\n  </div>\n  \n</div><!-- #block -->');
+      __out.push('\n  \n</div><!-- #block -->');
     
     }).call(this);
     

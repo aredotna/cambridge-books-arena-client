@@ -1,3 +1,3 @@
+<h1><%= @channel.title %></h1>
 <div id="modal" class="hide"></div>
 <div id="blocks" class="list"></div>
-<h1><%= @channel.title %></h1>
