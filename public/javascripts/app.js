@@ -516,7 +516,8 @@
 
     CollectionView.prototype.render = function() {
       this.$el.html(this.logo({
-        logo: this.options.logo.toJSON()
+        logo: this.options.logo.toJSON(),
+        channel: this.model.toJSON()
       }));
       this.$el.append(this.template({
         channel: this.model.toJSON(),
@@ -1119,7 +1120,15 @@
     
       __out.push(this.logo.description);
     
-      __out.push('\n  </div>\n</div>');
+      __out.push('\n  </div>\n</div>\n<h1 class="mode"><a href="#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('/mode:grid">▦</a> | <a href="#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('/mode:list">☰</a></h1>');
     
     }).call(this);
     

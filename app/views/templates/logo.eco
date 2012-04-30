@@ -5,3 +5,4 @@
     <%- @logo.description %>
   </div>
 </div>
+<h1 class="mode"><a href="#/<%= @channel.slug %>/mode:grid">▦</a> | <a href="#/<%= @channel.slug %>/mode:list">☰</a></h1>
