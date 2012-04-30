@@ -1,32 +1,38 @@
 {BlockView}      = require 'views/block_view'
 {SingleView}     = require 'views/single_view'
+{MenuView}       = require 'views/menu_view'
 {CollectionView} = require 'views/collection_view'
 {Channel}        = require 'models/channel'
 
 class exports.MainRouter extends Backbone.Router
   routes:
     ''                  : 'collection'
-    '/:slug'            : 'collection'
-    '/:slug/mode::mode' : 'collection'
-    '/:slug/show::id'   : 'single'
+    ':slug'            : 'collection'
+    ':slug/mode::mode' : 'collection'
+    ':slug/show::id'   : 'single'
 
   initialize: ->
     @channel = new Channel()
+    @menu = new Channel()
 
-  collection: (slug, mode = 'list') ->
-    # Save the current view mode in the channel
-    slug ?= "mit-office-e14-140s"
+    $.when(@menu.maybeLoad "cambridge-book").then =>
+      menuView = new MenuView
+        model       : @menu
+        collection  : @menu.contents.bySelection()
 
-    @channel.set {'mode', mode}
+      $('#menu').html menuView.render().el
 
-    $.when(@channel.maybeLoad slug).then =>
-      @collectionView = new CollectionView
-        model       : @channel
-        collection  : @channel.contents
-        mode        : mode
-      $('body')
-        .attr('class', 'collection')
-        .html @collectionView.render().el
+  collection: (slug, mode = 'grid') ->
+    if slug?
+      $.when(@channel.maybeLoad slug, mode).then =>
+        @collectionView = new CollectionView
+          logo        : @channel.logo
+          model       : @channel
+          collection  : @channel.contents.byNewest()
+          mode        : mode
+        $('#container')
+          .attr('class', 'collection')
+          .html @collectionView.render().el
 
   single: (slug, id) ->
     $.when(@channel.maybeLoad slug).then =>
@@ -34,6 +40,6 @@ class exports.MainRouter extends Backbone.Router
         model       : @channel.contents.get id
         collection  : @channel.contents
         channel     : @channel
-      $('body')
+      $('#container')
         .attr('class', 'single')
         .html @singleView.render().el

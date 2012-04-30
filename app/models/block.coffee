@@ -1,8 +1,7 @@
 class exports.Block extends Backbone.Model
   initialize: ->
     @checkIfMissingImage()
-    @channelConnection()
-    console.log('here', @)
+    @setArrangementPosition()
     
   checkIfMissingImage: ->
     # Check if the image actually is missing
@@ -10,7 +9,16 @@ class exports.Block extends Backbone.Model
     missing = '/assets/interface/missing.png'
     @set('image_thumb', null) if @get('image_thumb') is missing
 
-  channelConnection: =>
-    @set('channel_connection', _.find(@get('connections'), (connection) =>
-      connection.channel_id is app.router.channel.id)
-    )
+  channelConnection: => 
+    _.find @get('connections'), (connection) => connection.channel_id is @collection.channel.id
+
+  setArrangementPosition: ->
+    @set({position: @channelConnection().position}) if @isinArrangement()
+      
+  isinArrangement: ->
+    if @channelConnection().connection_type is 'Arrangement'
+      @set({arrangement: true})
+      return true
+    else
+      @set({arrangement: false})
+      return false

@@ -5,10 +5,16 @@ class exports.CollectionView extends Backbone.View
 
   initialize: ->
     # Set the page title
-    document.title = @model.get 'title'
+    document.title =  "Cambridge Book / #{@model.get 'title'}"
 
-    # Possible values: ['compact', 'list', 'grid', 'slideshow', 'scatter']
+    @logo = require "./templates/logo"
     @template = require "./templates/collection/#{@options.mode}"
+
+  events:
+    'click .toggle-info' : 'toggleInfo'
+
+  toggleInfo: ->
+    @$('.info').toggleClass('hide')
 
   addAll: ->
     @collection.each @addOne
@@ -23,7 +29,11 @@ class exports.CollectionView extends Backbone.View
     @$('#blocks').append view.render().el
 
   render: ->
-    @$el.html @template
+    @$el.html @logo
+      logo    : @options.logo.toJSON()
+
+    @$el.append @template
+      
       channel : @model.toJSON()
       blocks  : @collection.toJSON()
 

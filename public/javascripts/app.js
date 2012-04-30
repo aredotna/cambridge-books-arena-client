@@ -48,35 +48,55 @@
     };
   }
 }).call(this);(this.require.define({
-  "views/block_view": function(exports, require, module) {
+  "views/menu_view": function(exports, require, module) {
     (function() {
-  var __hasProp = Object.prototype.hasOwnProperty,
+  var BlockView,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  exports.BlockView = (function(_super) {
+  BlockView = require('views/block_view').BlockView;
 
-    __extends(BlockView, _super);
+  exports.MenuView = (function(_super) {
 
-    function BlockView() {
-      BlockView.__super__.constructor.apply(this, arguments);
+    __extends(MenuView, _super);
+
+    function MenuView() {
+      this.addOne = __bind(this.addOne, this);
+      MenuView.__super__.constructor.apply(this, arguments);
     }
 
-    BlockView.prototype.className = 'block';
+    MenuView.prototype.id = 'collection';
 
-    BlockView.prototype.initialize = function() {
-      return this.template = require("./templates/single/" + this.options.mode);
+    MenuView.prototype.initialize = function() {
+      return this.template = require("./templates/collection/menu");
     };
 
-    BlockView.prototype.render = function() {
+    MenuView.prototype.addAll = function() {
+      return this.collection.each(this.addOne);
+    };
+
+    MenuView.prototype.addOne = function(block) {
+      var view;
+      view = new BlockView({
+        mode: 'list',
+        model: block,
+        collection: this.model.blocks,
+        channel: this.model
+      });
+      return this.$('#blocks').append(view.render().el);
+    };
+
+    MenuView.prototype.render = function() {
       this.$el.html(this.template({
-        mode: this.options.mode,
-        channel: this.options.channel.toJSON(),
-        block: this.model.toJSON()
+        channel: this.model.toJSON(),
+        blocks: this.collection.toJSON()
       }));
+      this.addAll();
       return this;
     };
 
-    return BlockView;
+    return MenuView;
 
   })(Backbone.View);
 
@@ -141,7 +161,37 @@
     Blocks.prototype.model = Block;
 
     Blocks.prototype.comparator = function(model) {
-      return model.get('channel_connection').position;
+      if (!model.isNew()) return model.channelConnection().position;
+    };
+
+    Blocks.prototype.filtered = function(criteria) {
+      return new exports.Blocks(this.select(criteria));
+    };
+
+    Blocks.prototype.bySelection = function(selection) {
+      return this.filtered(function(block) {
+        if (selection === 'selected') {
+          return block.get('arrangement') === false;
+        } else {
+          return block.get('arrangement') === true;
+        }
+      });
+    };
+
+    Blocks.prototype.sortedBy = function(comparator) {
+      var sortedCollection;
+      sortedCollection = new exports.Blocks(this.models);
+      sortedCollection.comparator = comparator;
+      sortedCollection.sort();
+      return sortedCollection;
+    };
+
+    Blocks.prototype.byNewest = function() {
+      return this.sortedBy(function(block) {
+        var date;
+        date = new Date(block.channelConnection().created_at);
+        return -date.valueOf();
+      });
     };
 
     Blocks.prototype.next = function(model) {
@@ -184,8 +234,7 @@
 
     Block.prototype.initialize = function() {
       this.checkIfMissingImage();
-      this.channelConnection();
-      return console.log('here', this);
+      return this.setArrangementPosition();
     };
 
     Block.prototype.checkIfMissingImage = function() {
@@ -198,9 +247,31 @@
 
     Block.prototype.channelConnection = function() {
       var _this = this;
-      return this.set('channel_connection', _.find(this.get('connections'), function(connection) {
-        return connection.channel_id === app.router.channel.id;
-      }));
+      return _.find(this.get('connections'), function(connection) {
+        return connection.channel_id === _this.collection.channel.id;
+      });
+    };
+
+    Block.prototype.setArrangementPosition = function() {
+      if (this.isinArrangement()) {
+        return this.set({
+          position: this.channelConnection().position
+        });
+      }
+    };
+
+    Block.prototype.isinArrangement = function() {
+      if (this.channelConnection().connection_type === 'Arrangement') {
+        this.set({
+          arrangement: true
+        });
+        return true;
+      } else {
+        this.set({
+          arrangement: false
+        });
+        return false;
+      }
     };
 
     return Block;
@@ -228,15 +299,13 @@
       Channel.__super__.constructor.apply(this, arguments);
     }
 
-    Channel.prototype.initialize = function() {
-      return console.log('the channel', this);
-    };
+    Channel.prototype.initialize = function() {};
 
     Channel.prototype.url = function() {
       return "http://are.na/api/v1/channels/" + (this.get('slug')) + ".json?callback=?";
     };
 
-    Channel.prototype.maybeLoad = function(slug) {
+    Channel.prototype.maybeLoad = function(slug, mode) {
       var _this = this;
       if (slug === this.get('slug')) {
         return true;
@@ -247,6 +316,7 @@
         this.set('fetching', true);
         return this.fetch({
           success: function() {
+            _this.set('mode', mode);
             _this.setupBlocks();
             _this.set('fetching', false);
             app.loading().stop();
@@ -260,8 +330,11 @@
     };
 
     Channel.prototype.setupBlocks = function() {
-      this.contents = new Blocks(this.get('blocks'));
-      return this.contents.add(this.get('channels'));
+      this.contents = new Blocks();
+      this.contents.channel = this;
+      this.contents.add(this.get('blocks'));
+      this.contents.add(this.get('channels'));
+      if (this.has('mode')) return this.logo = this.contents.shift();
     };
 
     return Channel;
@@ -275,13 +348,15 @@
 (this.require.define({
   "routers/main_router": function(exports, require, module) {
     (function() {
-  var BlockView, Channel, CollectionView, SingleView,
+  var BlockView, Channel, CollectionView, MenuView, SingleView,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   BlockView = require('views/block_view').BlockView;
 
   SingleView = require('views/single_view').SingleView;
+
+  MenuView = require('views/menu_view').MenuView;
 
   CollectionView = require('views/collection_view').CollectionView;
 
@@ -297,31 +372,39 @@
 
     MainRouter.prototype.routes = {
       '': 'collection',
-      '/:slug': 'collection',
-      '/:slug/mode::mode': 'collection',
-      '/:slug/show::id': 'single'
+      ':slug': 'collection',
+      ':slug/mode::mode': 'collection',
+      ':slug/show::id': 'single'
     };
 
     MainRouter.prototype.initialize = function() {
-      return this.channel = new Channel();
+      var _this = this;
+      this.channel = new Channel();
+      this.menu = new Channel();
+      return $.when(this.menu.maybeLoad("cambridge-book")).then(function() {
+        var menuView;
+        menuView = new MenuView({
+          model: _this.menu,
+          collection: _this.menu.contents.bySelection()
+        });
+        return $('#menu').html(menuView.render().el);
+      });
     };
 
     MainRouter.prototype.collection = function(slug, mode) {
       var _this = this;
-      if (mode == null) mode = 'list';
-      if (slug == null) slug = "mit-office-e14-140s";
-      this.channel.set({
-        'mode': 'mode',
-        mode: mode
-      });
-      return $.when(this.channel.maybeLoad(slug)).then(function() {
-        _this.collectionView = new CollectionView({
-          model: _this.channel,
-          collection: _this.channel.contents,
-          mode: mode
+      if (mode == null) mode = 'grid';
+      if (slug != null) {
+        return $.when(this.channel.maybeLoad(slug, mode)).then(function() {
+          _this.collectionView = new CollectionView({
+            logo: _this.channel.logo,
+            model: _this.channel,
+            collection: _this.channel.contents.byNewest(),
+            mode: mode
+          });
+          return $('#container').attr('class', 'collection').html(_this.collectionView.render().el);
         });
-        return $('body').attr('class', 'collection').html(_this.collectionView.render().el);
-      });
+      }
     };
 
     MainRouter.prototype.single = function(slug, id) {
@@ -332,13 +415,120 @@
           collection: _this.channel.contents,
           channel: _this.channel
         });
-        return $('body').attr('class', 'single').html(_this.singleView.render().el);
+        return $('#container').attr('class', 'single').html(_this.singleView.render().el);
       });
     };
 
     return MainRouter;
 
   })(Backbone.Router);
+
+}).call(this);
+
+  }
+}));
+(this.require.define({
+  "views/block_view": function(exports, require, module) {
+    (function() {
+  var __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  exports.BlockView = (function(_super) {
+
+    __extends(BlockView, _super);
+
+    function BlockView() {
+      BlockView.__super__.constructor.apply(this, arguments);
+    }
+
+    BlockView.prototype.className = 'block';
+
+    BlockView.prototype.initialize = function() {
+      return this.template = require("./templates/single/" + this.options.mode);
+    };
+
+    BlockView.prototype.render = function() {
+      this.$el.html(this.template({
+        mode: this.options.mode,
+        channel: this.options.channel.toJSON(),
+        block: this.model.toJSON()
+      }));
+      return this;
+    };
+
+    return BlockView;
+
+  })(Backbone.View);
+
+}).call(this);
+
+  }
+}));
+(this.require.define({
+  "views/collection_view": function(exports, require, module) {
+    (function() {
+  var BlockView,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  BlockView = require('views/block_view').BlockView;
+
+  exports.CollectionView = (function(_super) {
+
+    __extends(CollectionView, _super);
+
+    function CollectionView() {
+      this.addOne = __bind(this.addOne, this);
+      CollectionView.__super__.constructor.apply(this, arguments);
+    }
+
+    CollectionView.prototype.id = 'collection';
+
+    CollectionView.prototype.initialize = function() {
+      document.title = "Cambridge Book / " + (this.model.get('title'));
+      this.logo = require("./templates/logo");
+      return this.template = require("./templates/collection/" + this.options.mode);
+    };
+
+    CollectionView.prototype.events = {
+      'click .toggle-info': 'toggleInfo'
+    };
+
+    CollectionView.prototype.toggleInfo = function() {
+      return this.$('.info').toggleClass('hide');
+    };
+
+    CollectionView.prototype.addAll = function() {
+      return this.collection.each(this.addOne);
+    };
+
+    CollectionView.prototype.addOne = function(block) {
+      var view;
+      view = new BlockView({
+        mode: this.options.mode,
+        model: block,
+        collection: this.model.blocks,
+        channel: this.model
+      });
+      return this.$('#blocks').append(view.render().el);
+    };
+
+    CollectionView.prototype.render = function() {
+      this.$el.html(this.logo({
+        logo: this.options.logo.toJSON()
+      }));
+      this.$el.append(this.template({
+        channel: this.model.toJSON(),
+        blocks: this.collection.toJSON()
+      }));
+      this.addAll();
+      return this;
+    };
+
+    return CollectionView;
+
+  })(Backbone.View);
 
 }).call(this);
 
@@ -373,64 +563,6 @@
   })(BrunchApplication);
 
   window.app = new exports.Application;
-
-}).call(this);
-
-  }
-}));
-(this.require.define({
-  "views/collection_view": function(exports, require, module) {
-    (function() {
-  var BlockView,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
-
-  BlockView = require('views/block_view').BlockView;
-
-  exports.CollectionView = (function(_super) {
-
-    __extends(CollectionView, _super);
-
-    function CollectionView() {
-      this.addOne = __bind(this.addOne, this);
-      CollectionView.__super__.constructor.apply(this, arguments);
-    }
-
-    CollectionView.prototype.id = 'collection';
-
-    CollectionView.prototype.initialize = function() {
-      document.title = this.model.get('title');
-      return this.template = require("./templates/collection/" + this.options.mode);
-    };
-
-    CollectionView.prototype.addAll = function() {
-      return this.collection.each(this.addOne);
-    };
-
-    CollectionView.prototype.addOne = function(block) {
-      var view;
-      view = new BlockView({
-        mode: this.options.mode,
-        model: block,
-        collection: this.model.blocks,
-        channel: this.model
-      });
-      return this.$('#blocks').append(view.render().el);
-    };
-
-    CollectionView.prototype.render = function() {
-      this.$el.html(this.template({
-        channel: this.model.toJSON(),
-        blocks: this.collection.toJSON()
-      }));
-      this.addAll();
-      return this;
-    };
-
-    return CollectionView;
-
-  })(Backbone.View);
 
 }).call(this);
 
@@ -524,11 +656,7 @@
   (function() {
     (function() {
     
-      __out.push('<h1>');
-    
-      __out.push(__sanitize(this.channel.title));
-    
-      __out.push('</h1>\n<div id="modal" class="hide"></div>\n<div id="blocks" class="grid"></div>\n');
+      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="grid"></div>\n');
     
     }).call(this);
     
@@ -585,6 +713,109 @@
       __out.push(__sanitize(this.channel.title));
     
       __out.push('</h1>\n<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/collection/menu": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+      var block, _i, _len, _ref;
+    
+      __out.push('<!-- TYPE-SPECIFIC OUTPUT: -->\n  ');
+    
+      _ref = this.blocks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        block = _ref[_i];
+        __out.push('\n    <div class="block ');
+        __out.push(block.block_type);
+        __out.push('">\n      ');
+        if (block.block_type === 'Image') {
+          __out.push('\n        <!-- IMAGE -->\n        <img src="');
+          __out.push(__sanitize(block.image_display));
+          __out.push('" alt="');
+          __out.push(__sanitize(block.title));
+          __out.push('" />\n      ');
+        } else if (block.block_type === 'Link') {
+          __out.push('\n        <!-- LINK -->\n        ');
+          if (block.image_display) {
+            __out.push('\n          <a href="');
+            __out.push(__sanitize(block.link_url));
+            __out.push('" class="external" target="_blank">\n            <img src="');
+            __out.push(__sanitize(block.image_display));
+            __out.push('" alt="');
+            __out.push(__sanitize(block.title));
+            __out.push('" />\n          </a>\n        ');
+          } else {
+            __out.push('\n          <p>\n            <a href="');
+            __out.push(__sanitize(block.link_url));
+            __out.push('" class="external url" target="_blank">');
+            __out.push(__sanitize(block.link_url));
+            __out.push('</a>\n          </p>\n        ');
+          }
+          __out.push('\n      ');
+        } else if (block.block_type === 'Text') {
+          __out.push('\n        <!-- TEXT -->\n        <div class="content">\n          ');
+          __out.push(block.content);
+          __out.push('\n        </div>\n      ');
+        } else if (block.block_type === 'Channel') {
+          __out.push('\n        <!-- TEXT -->\n          ');
+          if (block.published === true) {
+            __out.push('\n            <a href="#/');
+            __out.push(__sanitize(block.slug));
+            __out.push('">');
+            __out.push(block.title);
+            __out.push('</a>\n          ');
+          }
+          __out.push('\n      ');
+        }
+        __out.push('\n    </div>\n  ');
+      }
+    
+      __out.push('\n  <!-- UNIVERSAL OUTPUT: -->');
     
     }).call(this);
     
@@ -805,7 +1036,7 @@
       } else if (this.block.block_type === 'Text') {
         __out.push('\n    <!-- TEXT -->\n    <div class="content">\n      ');
         __out.push(this.block.content);
-        __out.push('\n    </div>\n\n  ');
+        __out.push('\n    </div>\n  ');
       } else if (this.block.block_type === 'Channel') {
         __out.push('\n    <!-- TEXT -->\n      ');
         __out.push(console.log('Channel', this.block));
@@ -816,7 +1047,79 @@
         __out.push('</a>\n  ');
       }
     
-      __out.push('\n  \n</div><!-- #block -->');
+      __out.push('\n\n  <!-- UNIVERSAL OUTPUT: -->\n\n    ');
+    
+      if (!(this.block.block_type === 'Text' || !this.block.content)) {
+        __out.push('\n      <div class="description">\n        <div class="content">\n          ');
+        __out.push(this.block.content);
+        __out.push('\n        </div>\n      </div>\n    ');
+      }
+    
+      __out.push('\n\n  </div>\n  \n</div><!-- #block -->');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/logo": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      __out.push('<h1><img src="');
+    
+      __out.push(__sanitize(this.logo.image_display));
+    
+      __out.push('" alt="');
+    
+      __out.push(__sanitize(this.logo.title));
+    
+      __out.push('" /></h1>\n<h1 class="toggle-info">ⓘ</h1>\n<div class="info hide">\n  <div class="description">\n    ');
+    
+      __out.push(this.logo.description);
+    
+      __out.push('\n  </div>\n</div>');
     
     }).call(this);
     

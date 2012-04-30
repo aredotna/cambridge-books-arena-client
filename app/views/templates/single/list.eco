@@ -49,11 +49,22 @@
     <div class="content">
       <%- @block.content %>
     </div>
-
   <% else if @block.block_type is 'Channel': %>
     <!-- TEXT -->
       <%- console.log('Channel', @block) %>
       <a href="#/<%= @block.slug %>"><%- @block.title %></a>
   <% end %>
+
+  <!-- UNIVERSAL OUTPUT: -->
+
+    <% unless @block.block_type is 'Text' or !@block.content: %>
+      <div class="description">
+        <div class="content">
+          <%- @block.content %>
+        </div>
+      </div>
+    <% end %>
+
+  </div>
   
 </div><!-- #block -->
