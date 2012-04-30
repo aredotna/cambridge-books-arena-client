@@ -1,0 +1,7 @@
+<h1><img src="<%= @logo.image_display %>" alt="<%= @logo.title %>" /></h1>
+<h1 class="toggle-info">ⓘ</h1>
+<div class="info hide">
+  <div class="description">
+    <%- @logo.description %>
+  </div>
+</div>
