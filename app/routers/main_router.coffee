@@ -23,6 +23,8 @@ class exports.MainRouter extends Backbone.Router
       $('#menu').html menuView.render().el
 
   collection: (slug, mode = 'grid') ->
+    window.scroll(0,0)
+    
     if slug?
       $.when(@channel.maybeLoad slug, mode).then =>
         @collectionView = new CollectionView
@@ -35,6 +37,8 @@ class exports.MainRouter extends Backbone.Router
           .html @collectionView.render().el
 
   single: (slug, id) ->
+    window.scroll(0,0)
+
     $.when(@channel.maybeLoad slug).then =>
       @singleView = new SingleView
         model       : @channel.contents.get id

@@ -125,10 +125,10 @@
     BrunchApplication.prototype.loading = function() {
       return {
         start: function() {
-          return $('body').addClass('loading');
+          return $('#container').html('').addClass('loading');
         },
         stop: function() {
-          return $('body').removeClass('loading');
+          return $('#container').removeClass('loading');
         }
       };
     };
@@ -394,6 +394,7 @@
     MainRouter.prototype.collection = function(slug, mode) {
       var _this = this;
       if (mode == null) mode = 'grid';
+      window.scroll(0, 0);
       if (slug != null) {
         return $.when(this.channel.maybeLoad(slug, mode)).then(function() {
           _this.collectionView = new CollectionView({
@@ -409,6 +410,7 @@
 
     MainRouter.prototype.single = function(slug, id) {
       var _this = this;
+      window.scroll(0, 0);
       return $.when(this.channel.maybeLoad(slug)).then(function() {
         _this.singleView = new SingleView({
           model: _this.channel.contents.get(id),
@@ -495,6 +497,10 @@
       'click .toggle-info': 'toggleInfo'
     };
 
+    CollectionView.prototype.randomXToY = function(minVal, maxVal, floatVal) {
+      return minVal + (Math.random() * (maxVal - minVal));
+    };
+
     CollectionView.prototype.toggleInfo = function() {
       return this.$('.info').toggleClass('hide');
     };
@@ -515,6 +521,7 @@
     };
 
     CollectionView.prototype.render = function() {
+      console.log(this.options.logo.get('title'));
       this.$el.html(this.logo({
         logo: this.options.logo.toJSON(),
         channel: this.model.toJSON()
@@ -613,6 +620,86 @@
 
 }).call(this);
 
+  }
+}));
+(this.require.define({
+  "views/templates/logo": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      __out.push('<div class="info" style="background: transparent url(');
+    
+      __out.push(__sanitize(this.logo.image_display));
+    
+      __out.push(') no-repeat center center;">\n  ');
+    
+      if (this.channel.title != null) {
+        __out.push('\n    <h1>\n      <span>');
+        __out.push(__sanitize(this.channel.title));
+        __out.push('</span>\n    </h1>\n  ');
+      }
+    
+      __out.push('\n  ');
+    
+      if (this.logo.description != null) {
+        __out.push('\n    <div class="description">\n      ');
+        __out.push(this.logo.description);
+        __out.push('\n    </div>\n  ');
+      }
+    
+      __out.push('\n</div>\n\n<nav>\n  <div class="mode">\n    <a href="#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('/mode:grid">Grid</a>\n    <span class="meta-sep">|</span>\n    <a href="#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('/mode:list">List</a>\n  </div>\n</nav>');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
   }
 }));
 (this.require.define({
@@ -766,57 +853,55 @@
     (function() {
       var block, _i, _len, _ref;
     
-      __out.push('<!-- TYPE-SPECIFIC OUTPUT: -->\n  ');
-    
       _ref = this.blocks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         block = _ref[_i];
-        __out.push('\n    <div class="block ');
+        __out.push('\n  <div class="block ');
         __out.push(block.block_type);
-        __out.push('">\n      ');
+        __out.push('">\n    ');
         if (block.block_type === 'Image') {
-          __out.push('\n        <!-- IMAGE -->\n        <img src="');
+          __out.push('\n      <!-- IMAGE -->\n      <img src="');
           __out.push(__sanitize(block.image_display));
           __out.push('" alt="');
           __out.push(__sanitize(block.title));
-          __out.push('" />\n      ');
+          __out.push('" />\n    ');
         } else if (block.block_type === 'Link') {
-          __out.push('\n        <!-- LINK -->\n        ');
+          __out.push('\n      <!-- LINK -->\n      ');
           if (block.image_display) {
-            __out.push('\n          <a href="');
+            __out.push('\n        <a href="');
             __out.push(__sanitize(block.link_url));
-            __out.push('" class="external" target="_blank">\n            <img src="');
+            __out.push('" class="external" target="_blank">\n          <img src="');
             __out.push(__sanitize(block.image_display));
             __out.push('" alt="');
             __out.push(__sanitize(block.title));
-            __out.push('" />\n          </a>\n        ');
+            __out.push('" />\n        </a>\n      ');
           } else {
-            __out.push('\n          <p>\n            <a href="');
+            __out.push('\n        <p>\n          <a href="');
             __out.push(__sanitize(block.link_url));
             __out.push('" class="external url" target="_blank">');
             __out.push(__sanitize(block.link_url));
-            __out.push('</a>\n          </p>\n        ');
+            __out.push('</a>\n        </p>\n      ');
           }
-          __out.push('\n      ');
+          __out.push('\n    ');
         } else if (block.block_type === 'Text') {
-          __out.push('\n        <!-- TEXT -->\n        <div class="content">\n          ');
+          __out.push('\n      <!-- TEXT -->\n      <div class="content">\n        ');
           __out.push(block.content);
-          __out.push('\n        </div>\n      ');
+          __out.push('\n      </div>\n    ');
         } else if (block.block_type === 'Channel') {
-          __out.push('\n        <!-- TEXT -->\n          ');
+          __out.push('\n      <!-- TEXT -->\n        ');
           if (block.published === true) {
-            __out.push('\n            <a href="#/');
+            __out.push('\n          <a href="#/');
             __out.push(__sanitize(block.slug));
             __out.push('">');
             __out.push(block.title);
-            __out.push('</a>\n          ');
+            __out.push('</a>\n        ');
           }
-          __out.push('\n      ');
+          __out.push('\n    ');
         }
-        __out.push('\n    </div>\n  ');
+        __out.push('\n  </div>\n');
       }
     
-      __out.push('\n  <!-- UNIVERSAL OUTPUT: -->');
+      __out.push('\n');
     
     }).call(this);
     
@@ -949,25 +1034,13 @@
     (function() {
     
       if (this.prev || this.next) {
-        __out.push('\n  <nav>\n    ');
+        __out.push('\n  <nav class="pagination">\n    ');
         if (this.prev) {
           __out.push('\n      <a href="/#/');
           __out.push(__sanitize(this.channel.slug));
           __out.push('/show:');
           __out.push(__sanitize(this.prev.id));
-          __out.push('">Previous</a>\n    ');
-        }
-        __out.push('\n    ');
-        if (this.channel.mode) {
-          __out.push('\n      <a href="/#/');
-          __out.push(__sanitize(this.channel.slug));
-          __out.push('/mode:');
-          __out.push(__sanitize(this.channel.mode));
-          __out.push('">Up</a>\n    ');
-        } else {
-          __out.push('\n      <a href="/#/');
-          __out.push(__sanitize(this.channel.slug));
-          __out.push('">Up</a>\n    ');
+          __out.push('" class="previous">Previous</a>\n    ');
         }
         __out.push('\n    ');
         if (this.next) {
@@ -975,7 +1048,19 @@
           __out.push(__sanitize(this.channel.slug));
           __out.push('/show:');
           __out.push(__sanitize(this.next.id));
-          __out.push('">Next</a>\n    ');
+          __out.push('" class="next">Next</a>\n    ');
+        }
+        __out.push('\n    ');
+        if (this.channel.mode) {
+          __out.push('\n      <a href="/#/');
+          __out.push(__sanitize(this.channel.slug));
+          __out.push('/mode:');
+          __out.push(__sanitize(this.channel.mode));
+          __out.push('" class="up">Up</a>\n    ');
+        } else {
+          __out.push('\n      <a href="/#/');
+          __out.push(__sanitize(this.channel.slug));
+          __out.push('" class="up">Up</a>\n    ');
         }
         __out.push('\n  </nav>\n');
       }
@@ -1039,9 +1124,7 @@
         __out.push(this.block.content);
         __out.push('\n    </div>\n  ');
       } else if (this.block.block_type === 'Channel') {
-        __out.push('\n    <!-- TEXT -->\n      ');
-        __out.push(console.log('Channel', this.block));
-        __out.push('\n      <a href="#/');
+        __out.push('\n    <!-- TEXT -->\n      <a href="#/');
         __out.push(__sanitize(this.block.slug));
         __out.push('">');
         __out.push(this.block.title);
@@ -1057,78 +1140,6 @@
       }
     
       __out.push('\n\n  </div>\n  \n</div><!-- #block -->');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
-  "views/templates/logo": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-    
-      __out.push('<h1><img src="');
-    
-      __out.push(__sanitize(this.logo.image_display));
-    
-      __out.push('" alt="');
-    
-      __out.push(__sanitize(this.logo.title));
-    
-      __out.push('" /></h1>\n<h1 class="toggle-info">ⓘ</h1>\n<div class="info hide">\n  <div class="description">\n    ');
-    
-      __out.push(this.logo.description);
-    
-      __out.push('\n  </div>\n</div>\n<h1 class="mode"><a href="#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('/mode:grid">▦</a> | <a href="#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('/mode:list">☰</a></h1>');
     
     }).call(this);
     

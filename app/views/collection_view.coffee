@@ -13,6 +13,9 @@ class exports.CollectionView extends Backbone.View
   events:
     'click .toggle-info' : 'toggleInfo'
 
+  randomXToY: (minVal, maxVal, floatVal) ->
+    minVal + (Math.random() * (maxVal - minVal))
+
   toggleInfo: ->
     @$('.info').toggleClass('hide')
 
@@ -29,12 +32,12 @@ class exports.CollectionView extends Backbone.View
     @$('#blocks').append view.render().el
 
   render: ->
+    console.log @options.logo.get('title')
     @$el.html @logo
       logo    : @options.logo.toJSON()
       channel : @model.toJSON()
 
     @$el.append @template
-      
       channel : @model.toJSON()
       blocks  : @collection.toJSON()
 

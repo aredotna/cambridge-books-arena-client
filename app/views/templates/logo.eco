@@ -1,8 +1,20 @@
-<h1><img src="<%= @logo.image_display %>" alt="<%= @logo.title %>" /></h1>
-<h1 class="toggle-info">ⓘ</h1>
-<div class="info hide">
-  <div class="description">
-    <%- @logo.description %>
-  </div>
+<div class="info" style="background: transparent url(<%= @logo.image_display %>) no-repeat center center;">
+  <% if @channel.title?: %>
+    <h1>
+      <span><%= @channel.title %></span>
+    </h1>
+  <% end %>
+  <% if @logo.description?: %>
+    <div class="description">
+      <%- @logo.description %>
+    </div>
+  <% end %>
 </div>
-<h1 class="mode"><a href="#/<%= @channel.slug %>/mode:grid">▦</a> | <a href="#/<%= @channel.slug %>/mode:list">☰</a></h1>
+
+<nav>
+  <div class="mode">
+    <a href="#/<%= @channel.slug %>/mode:grid">Grid</a>
+    <span class="meta-sep">|</span>
+    <a href="#/<%= @channel.slug %>/mode:list">List</a>
+  </div>
+</nav>

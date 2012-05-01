@@ -1,66 +1,112 @@
 @import 'nib'
 
-body
-  font-size: 14px
-  line-height: 18px
-  font-family: serif
-  padding: 5%
-  // Collection
-  &.collection
-    color: #111
-    background: #fff
-    a
-      color: #000
-  // Single
-  &.single
-    background: #000
-    color: #eee
-    a
-      color: #fff
-  // Loading
-  &.loading
-    background: #fff url('../images/load.gif') top left no-repeat
+// VARIABLES
+// ---------
+base_font_size   = 14px
+base_line_height = 20px
+text_color       = #000
+link_color       = #13f
+sidebar_width    = 330px
 
-h1, h2, h3, h4, nav
-  font-family: sans-serif
+
+// BASE
+// ----
+html, body
+  height: 100%
+
+body
+  margin: 0
+  padding: 0
+  font-size: base_font_size
+  line-height: base_line_height
+  font-family: serif
+  color: text_color
+
+  a, a:visited
+    font-family: sans-serif
+    color: link_color
+    text-decoration: none
+    font-weight: bold
+    &:hover
+      color: link_color
+      text-decoration: underline
+
+  // LOADING INDICATOR
+  &.loading
+    background: #fff url('../images/loader.gif') center center no-repeat
 
 h1, h2, h3, h4
-  text-align: center
-  font-size: 16px
+  font-family: sans-serif
+  font-weight: bold
+
+
+h1, h2, h3, h4
+  text-align: left
+  font-size: base_font_size
+  text-decoration: underline
 
 nav
-  margin: 20px 0
-  text-align: center
-
-.title, .content
-  font-size: 16px
+  margin: base_line_height 0
   text-align: left
-  margin: 0 auto
+
+// STRUCTURE
+// ---------
 
 #menu
-  float:left
-  width:200px
-  margin-right:50px
-  .Text
-    margin-top:10px
-    margin-bottom:10px
+  position: fixed
+  top: base_line_height
+  bottom: base_line_height
+  left: base_line_height
+  width: sidebar_width
+  overflow-y: scroll
+  overflow-x: hidden
+  background-color: #fff
+  border: 4px solid #000
+  padding: base_line_height
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  box-sizing: border-box
 
-h1.mode
-  font-size:18px
-  a, a:visited 
-    text-decoration:none
-    color:#000
+#container
+  min-height: 100%
+  margin-left: sidebar_width + base_line_height
+  padding: base_line_height
+  &.loading
+    background: #fff url('../images/loader.gif') center center no-repeat
 
-
-#blocks.list .block, #single.block
-  margin: 20px 0
-  padding-bottom: 20px
-  .image, .link, .media
+.info
+  margin: 0
+  border: 4px solid #000
+  h1
+    text-transform: uppercase
     text-align: center
-  .text
-    text-align: center
+    margin: 0
+    padding: base_line_height
+    span
+      background-color: #fff
+  .description
+    border-top: 4px solid #000
+    padding: base_line_height
+
+.mode
+  display: none
+  margin: base_line_height*2 0
+
+.pagination
+  clearfix()
+  margin-top: 0
+  border: 4px solid #000
+  .previous, .up, .next
+    float: left
+    display: block
+    padding: base_line_height
+    border-right: 4px solid #000
+
+
+// GRID
+// ----
 #blocks.grid
-  text-align: center
+  text-align: left
   .block
     display: inline-block
     height: 250px
@@ -68,6 +114,20 @@ h1.mode
     line-height: 250px
     text-align: center
     vertical-align: middle
+    border: 4px solid #000
+    margin: 0 base_line_height base_line_height 0
+    img
+      -webkit-box-shadow: 4px 4px 4px 0px #ccc;
+      box-shadow: 4px 4px 4px 0px #ccc;
+
+#single
+  img
+    -webkit-box-shadow: 4px 4px 4px 0px #ccc;
+    box-shadow: 4px 4px 4px 0px #ccc;
+
+.content
+  margin: base_line_height 0
+  max-width: 600px
 
 .metadata dl
   dt
@@ -81,17 +141,6 @@ h1.mode
     a, a:visited
       text-decoration: none
 
-// MODAL
-// -----
-#modal
-  position    : fixed
-  top         : 0
-  left        : 0
-  z-index     : 1
-  background  : red
-  width       : 100%
-  height      : 100%
-
 // UTILITY
 // -------
 .hide
@@ -99,3 +148,7 @@ h1.mode
 
 .show
   display: block
+
+.meta-sep
+  color: #ccc
+  margin: 0 base_line_height * 0.25
