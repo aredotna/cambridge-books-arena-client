@@ -521,7 +521,6 @@
     };
 
     CollectionView.prototype.render = function() {
-      console.log(this.options.logo.get('title'));
       this.$el.html(this.logo({
         logo: this.options.logo.toJSON(),
         channel: this.model.toJSON()
@@ -796,11 +795,7 @@
   (function() {
     (function() {
     
-      __out.push('<h1>');
-    
-      __out.push(__sanitize(this.channel.title));
-    
-      __out.push('</h1>\n<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
+      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
     
     }).call(this);
     
