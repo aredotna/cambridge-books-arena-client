@@ -41,6 +41,7 @@ class exports.MainRouter extends Backbone.Router
 
     $.when(@channel.maybeLoad slug).then =>
       @singleView = new SingleView
+        logo        : @channel.logo
         model       : @channel.contents.get id
         collection  : @channel.contents
         channel     : @channel

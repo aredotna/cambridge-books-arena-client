@@ -410,6 +410,7 @@
       window.scroll(0, 0);
       return $.when(this.channel.maybeLoad(slug)).then(function() {
         _this.singleView = new SingleView({
+          logo: _this.channel.logo,
           model: _this.channel.contents.get(id),
           collection: _this.channel.contents,
           channel: _this.channel
@@ -693,7 +694,7 @@
     
       __out.push(__sanitize(this.channel.slug));
     
-      __out.push('/mode:list">List</a>\n  </div>\n</nav> -->');
+      __out.push('/mode:list">List</a>\n  </div>\n</nav> -->\n');
     
     }).call(this);
     
