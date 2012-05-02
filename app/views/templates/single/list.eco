@@ -1,15 +1,15 @@
 <% if @prev or @next: %>
   <nav class="pagination">
     <% if @prev: %>
-      <a href="/#/<%= @channel.slug %>/show:<%= @prev.id %>" class="previous">Previous</a>
+      <a href="#/<%= @channel.slug %>/show:<%= @prev.id %>" class="previous">Previous</a>
     <% end %>
     <% if @next: %>
-      <a href="/#/<%= @channel.slug %>/show:<%= @next.id %>" class="next">Next</a>
+      <a href="#/<%= @channel.slug %>/show:<%= @next.id %>" class="next">Next</a>
     <% end %>
     <% if @channel.mode: %>
-      <a href="/#/<%= @channel.slug %>/mode:<%= @channel.mode %>" class="up">Up</a>
+      <a href="#/<%= @channel.slug %>/mode:<%= @channel.mode %>" class="up">Up</a>
     <% else: %>
-      <a href="/#/<%= @channel.slug %>" class="up">Up</a>
+      <a href="#/<%= @channel.slug %>" class="up">Up</a>
     <% end %>
   </nav>
 <% end %>

@@ -105,34 +105,37 @@
   }
 }));
 (this.require.define({
-  "initialize": function(exports, require, module) {
+  "helpers": function(exports, require, module) {
     (function() {
-  var BrunchApplication, MainRouter,
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  BrunchApplication = require('helpers').BrunchApplication;
+  exports.BrunchApplication = (function() {
 
-  MainRouter = require('routers/main_router').MainRouter;
-
-  exports.Application = (function(_super) {
-
-    __extends(Application, _super);
-
-    function Application() {
-      Application.__super__.constructor.apply(this, arguments);
+    function BrunchApplication() {
+      var _this = this;
+      $(function() {
+        _this.initialize(_this);
+        return Backbone.history.start();
+      });
     }
 
-    Application.prototype.initialize = function() {
-      this.loading().start();
-      return this.router = new MainRouter;
+    BrunchApplication.prototype.initialize = function() {
+      return null;
     };
 
-    return Application;
+    BrunchApplication.prototype.loading = function() {
+      return {
+        start: function() {
+          return $('#container').html('').addClass('loading');
+        },
+        stop: function() {
+          return $('#container').removeClass('loading');
+        }
+      };
+    };
 
-  })(BrunchApplication);
+    return BrunchApplication;
 
-  window.app = new exports.Application;
+  })();
 
 }).call(this);
 
@@ -397,7 +400,7 @@
           _this.collectionView = new CollectionView({
             logo: _this.channel.logo,
             model: _this.channel,
-            collection: _this.channel.contents.byNewest(),
+            collection: _this.channel.contents.bySelection().byNewest(),
             mode: mode
           });
           return $('#container').attr('class', 'collection').html(_this.collectionView.render().el);
@@ -540,37 +543,34 @@
   }
 }));
 (this.require.define({
-  "helpers": function(exports, require, module) {
+  "initialize": function(exports, require, module) {
     (function() {
+  var BrunchApplication, MainRouter,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  exports.BrunchApplication = (function() {
+  BrunchApplication = require('helpers').BrunchApplication;
 
-    function BrunchApplication() {
-      var _this = this;
-      $(function() {
-        _this.initialize(_this);
-        return Backbone.history.start();
-      });
+  MainRouter = require('routers/main_router').MainRouter;
+
+  exports.Application = (function(_super) {
+
+    __extends(Application, _super);
+
+    function Application() {
+      Application.__super__.constructor.apply(this, arguments);
     }
 
-    BrunchApplication.prototype.initialize = function() {
-      return null;
+    Application.prototype.initialize = function() {
+      this.loading().start();
+      return this.router = new MainRouter;
     };
 
-    BrunchApplication.prototype.loading = function() {
-      return {
-        start: function() {
-          return $('#container').html('').addClass('loading');
-        },
-        stop: function() {
-          return $('#container').removeClass('loading');
-        }
-      };
-    };
+    return Application;
 
-    return BrunchApplication;
+  })(BrunchApplication);
 
-  })();
+  window.app = new exports.Application;
 
 }).call(this);
 
@@ -620,88 +620,6 @@
 
 }).call(this);
 
-  }
-}));
-(this.require.define({
-  "views/templates/logo": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-    
-      __out.push('<div class="info" style="background: transparent url(\'');
-    
-      __out.push(__sanitize(this.logo.image_display));
-    
-      __out.push('\') no-repeat center center;">\n  ');
-    
-      if (this.channel.title != null) {
-        __out.push('\n    <h1>\n      <span>');
-        __out.push(__sanitize(this.channel.title));
-        __out.push('</span>\n      <a class="arena-mark" href="http://are.na/#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('" target="_blank"></a>\n    </h1>\n  ');
-      }
-    
-      __out.push('\n  ');
-    
-      if ((this.logo.description != null) && this.logo.description !== "") {
-        __out.push('\n    <div class="description">\n      ');
-        __out.push(this.logo.description);
-        __out.push('\n    </div>\n  ');
-      }
-    
-      __out.push('\n</div>\n\n<!-- <nav>\n  <div class="mode">\n    <a href="#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('/mode:grid">Grid</a>\n    <span class="meta-sep">|</span>\n    <a href="#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('/mode:list">List</a>\n  </div>\n</nav> -->\n');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
   }
 }));
 (this.require.define({
@@ -809,6 +727,326 @@
   }
 }));
 (this.require.define({
+  "views/templates/single/grid": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      __out.push('<div class="thumb">\n  ');
+    
+      if (this.block.image_thumb) {
+        __out.push('\n    <div class="image">\n      <a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('/show:');
+        __out.push(__sanitize(this.block.id));
+        __out.push('">\n        <img src="');
+        __out.push(__sanitize(this.block.image_thumb));
+        __out.push('" alt="');
+        __out.push(__sanitize(this.block.title));
+        __out.push('" />\n      </a>\n    </div>\n  ');
+      } else if (this.block.title) {
+        __out.push('\n    <a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('/show:');
+        __out.push(__sanitize(this.block.id));
+        __out.push('">\n      ');
+        __out.push(__sanitize(_.str.prune(this.block.title, 30)));
+        __out.push('\n    </a>\n  ');
+      } else {
+        __out.push('\n    <a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('/show:');
+        __out.push(__sanitize(this.block.id));
+        __out.push('">\n      Untitled\n    </a>\n  ');
+      }
+    
+      __out.push('\n</div>');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/single/list": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      if (this.prev || this.next) {
+        __out.push('\n  <nav class="pagination">\n    ');
+        if (this.prev) {
+          __out.push('\n      <a href="#/');
+          __out.push(__sanitize(this.channel.slug));
+          __out.push('/show:');
+          __out.push(__sanitize(this.prev.id));
+          __out.push('" class="previous">Previous</a>\n    ');
+        }
+        __out.push('\n    ');
+        if (this.next) {
+          __out.push('\n      <a href="#/');
+          __out.push(__sanitize(this.channel.slug));
+          __out.push('/show:');
+          __out.push(__sanitize(this.next.id));
+          __out.push('" class="next">Next</a>\n    ');
+        }
+        __out.push('\n    ');
+        if (this.channel.mode) {
+          __out.push('\n      <a href="#/');
+          __out.push(__sanitize(this.channel.slug));
+          __out.push('/mode:');
+          __out.push(__sanitize(this.channel.mode));
+          __out.push('" class="up">Up</a>\n    ');
+        } else {
+          __out.push('\n      <a href="#/');
+          __out.push(__sanitize(this.channel.slug));
+          __out.push('" class="up">Up</a>\n    ');
+        }
+        __out.push('\n  </nav>\n');
+      }
+    
+      __out.push('\n\n<div id="block_');
+    
+      __out.push(__sanitize(this.block.id));
+    
+      __out.push('" class="full ');
+    
+      __out.push(__sanitize(this.block.block_type.toLowerCase()));
+    
+      __out.push('" data-type="');
+    
+      __out.push(__sanitize(this.block.block_type));
+    
+      __out.push('">\n\n  <!-- TYPE-SPECIFIC OUTPUT: -->\n  ');
+    
+      if (this.block.block_type === 'Media') {
+        __out.push('\n    <!-- MEDIA -->\n    <div class="embed">\n      ');
+        if (this.block.embed_html) {
+          __out.push('\n        ');
+          __out.push(this.block.embed_html);
+          __out.push('\n      ');
+        } else {
+          __out.push('\n        <a href="');
+          __out.push(__sanitize(this.block.embed_source_url));
+          __out.push('" class="url external">\n          ');
+          __out.push(__sanitize(this.block.embed_source_url));
+          __out.push('\n        </a>\n      ');
+        }
+        __out.push('\n    </div>\n  ');
+      } else if (this.block.block_type === 'Image') {
+        __out.push('\n    <!-- IMAGE -->\n    <a href="');
+        __out.push(__sanitize(this.block.image_original));
+        __out.push('" class="enlarge">\n      <img src="');
+        __out.push(__sanitize(this.block.image_display));
+        __out.push('" alt="');
+        __out.push(__sanitize(this.block.title));
+        __out.push('" />\n    </a>\n  ');
+      } else if (this.block.block_type === 'Link') {
+        __out.push('\n    <!-- LINK -->\n    ');
+        if (this.block.image_display) {
+          __out.push('\n      <a href="');
+          __out.push(__sanitize(this.block.link_url));
+          __out.push('" class="external" target="_blank">\n        <img src="');
+          __out.push(__sanitize(this.block.image_display));
+          __out.push('" alt="');
+          __out.push(__sanitize(this.block.title));
+          __out.push('" />\n      </a>\n    ');
+        } else {
+          __out.push('\n      <p>\n        <a href="');
+          __out.push(__sanitize(this.block.link_url));
+          __out.push('" class="external url" target="_blank">');
+          __out.push(__sanitize(this.block.link_url));
+          __out.push('</a>\n      </p>\n    ');
+        }
+        __out.push('\n  ');
+      } else if (this.block.block_type === 'Text') {
+        __out.push('\n    <!-- TEXT -->\n    <div class="content">\n      ');
+        __out.push(this.block.content);
+        __out.push('\n    </div>\n  ');
+      } else if (this.block.block_type === 'Channel') {
+        __out.push('\n    <!-- TEXT -->\n      <a href="#/');
+        __out.push(__sanitize(this.block.slug));
+        __out.push('">');
+        __out.push(this.block.title);
+        __out.push('</a>\n  ');
+      }
+    
+      __out.push('\n\n  <!-- UNIVERSAL OUTPUT: -->\n\n    ');
+    
+      if (!(this.block.block_type === 'Text' || !this.block.content)) {
+        __out.push('\n      <div class="description">\n        <div class="content">\n          ');
+        __out.push(this.block.content);
+        __out.push('\n        </div>\n      </div>\n    ');
+      }
+    
+      __out.push('\n\n  </div>\n  \n</div><!-- #block -->');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/logo": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      __out.push('<div class="info" style="background: transparent url(\'');
+    
+      __out.push(__sanitize(this.logo.image_display));
+    
+      __out.push('\') no-repeat center center;">\n  ');
+    
+      if (this.channel.title != null) {
+        __out.push('\n    <h1>\n      <span>');
+        __out.push(__sanitize(this.channel.title));
+        __out.push('</span>\n      <a class="arena-mark" href="http://are.na/#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('" target="_blank"></a>\n    </h1>\n  ');
+      }
+    
+      __out.push('\n  ');
+    
+      if ((this.logo.description != null) && this.logo.description !== "") {
+        __out.push('\n    <div class="description">\n      ');
+        __out.push(this.logo.description);
+        __out.push('\n    </div>\n  ');
+      }
+    
+      __out.push('\n</div>\n\n<!-- <nav>\n  <div class="mode">\n    <a href="#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('/mode:grid">Grid</a>\n    <span class="meta-sep">|</span>\n    <a href="#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('/mode:list">List</a>\n  </div>\n</nav> -->\n');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
   "views/templates/collection/menu": function(exports, require, module) {
     module.exports = function (__obj) {
   if (!__obj) __obj = {};
@@ -900,244 +1138,6 @@
       }
     
       __out.push('\n');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
-  "views/templates/single/grid": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-    
-      __out.push('<div class="thumb">\n  ');
-    
-      if (this.block.image_thumb) {
-        __out.push('\n    <div class="image">\n      <a href="/#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('/show:');
-        __out.push(__sanitize(this.block.id));
-        __out.push('">\n        <img src="');
-        __out.push(__sanitize(this.block.image_thumb));
-        __out.push('" alt="');
-        __out.push(__sanitize(this.block.title));
-        __out.push('" />\n      </a>\n    </div>\n  ');
-      } else if (this.block.title) {
-        __out.push('\n    <a href="/#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('/show:');
-        __out.push(__sanitize(this.block.id));
-        __out.push('">\n      ');
-        __out.push(__sanitize(_.str.prune(this.block.title, 30)));
-        __out.push('\n    </a>\n  ');
-      } else {
-        __out.push('\n    <a href="/#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('/show:');
-        __out.push(__sanitize(this.block.id));
-        __out.push('">\n      Untitled\n    </a>\n  ');
-      }
-    
-      __out.push('\n</div>');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
-  "views/templates/single/list": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-    
-      if (this.prev || this.next) {
-        __out.push('\n  <nav class="pagination">\n    ');
-        if (this.prev) {
-          __out.push('\n      <a href="/#/');
-          __out.push(__sanitize(this.channel.slug));
-          __out.push('/show:');
-          __out.push(__sanitize(this.prev.id));
-          __out.push('" class="previous">Previous</a>\n    ');
-        }
-        __out.push('\n    ');
-        if (this.next) {
-          __out.push('\n      <a href="/#/');
-          __out.push(__sanitize(this.channel.slug));
-          __out.push('/show:');
-          __out.push(__sanitize(this.next.id));
-          __out.push('" class="next">Next</a>\n    ');
-        }
-        __out.push('\n    ');
-        if (this.channel.mode) {
-          __out.push('\n      <a href="/#/');
-          __out.push(__sanitize(this.channel.slug));
-          __out.push('/mode:');
-          __out.push(__sanitize(this.channel.mode));
-          __out.push('" class="up">Up</a>\n    ');
-        } else {
-          __out.push('\n      <a href="/#/');
-          __out.push(__sanitize(this.channel.slug));
-          __out.push('" class="up">Up</a>\n    ');
-        }
-        __out.push('\n  </nav>\n');
-      }
-    
-      __out.push('\n\n<div id="block_');
-    
-      __out.push(__sanitize(this.block.id));
-    
-      __out.push('" class="full ');
-    
-      __out.push(__sanitize(this.block.block_type.toLowerCase()));
-    
-      __out.push('" data-type="');
-    
-      __out.push(__sanitize(this.block.block_type));
-    
-      __out.push('">\n\n  <!-- TYPE-SPECIFIC OUTPUT: -->\n  ');
-    
-      if (this.block.block_type === 'Media') {
-        __out.push('\n    <!-- MEDIA -->\n    <div class="embed">\n      ');
-        if (this.block.embed_html) {
-          __out.push('\n        ');
-          __out.push(this.block.embed_html);
-          __out.push('\n      ');
-        } else {
-          __out.push('\n        <a href="');
-          __out.push(__sanitize(this.block.embed_source_url));
-          __out.push('" class="url external">\n          ');
-          __out.push(__sanitize(this.block.embed_source_url));
-          __out.push('\n        </a>\n      ');
-        }
-        __out.push('\n    </div>\n  ');
-      } else if (this.block.block_type === 'Image') {
-        __out.push('\n    <!-- IMAGE -->\n    <a href="');
-        __out.push(__sanitize(this.block.image_original));
-        __out.push('" class="enlarge">\n      <img src="');
-        __out.push(__sanitize(this.block.image_display));
-        __out.push('" alt="');
-        __out.push(__sanitize(this.block.title));
-        __out.push('" />\n    </a>\n  ');
-      } else if (this.block.block_type === 'Link') {
-        __out.push('\n    <!-- LINK -->\n    ');
-        if (this.block.image_display) {
-          __out.push('\n      <a href="');
-          __out.push(__sanitize(this.block.link_url));
-          __out.push('" class="external" target="_blank">\n        <img src="');
-          __out.push(__sanitize(this.block.image_display));
-          __out.push('" alt="');
-          __out.push(__sanitize(this.block.title));
-          __out.push('" />\n      </a>\n    ');
-        } else {
-          __out.push('\n      <p>\n        <a href="');
-          __out.push(__sanitize(this.block.link_url));
-          __out.push('" class="external url" target="_blank">');
-          __out.push(__sanitize(this.block.link_url));
-          __out.push('</a>\n      </p>\n    ');
-        }
-        __out.push('\n  ');
-      } else if (this.block.block_type === 'Text') {
-        __out.push('\n    <!-- TEXT -->\n    <div class="content">\n      ');
-        __out.push(this.block.content);
-        __out.push('\n    </div>\n  ');
-      } else if (this.block.block_type === 'Channel') {
-        __out.push('\n    <!-- TEXT -->\n      <a href="#/');
-        __out.push(__sanitize(this.block.slug));
-        __out.push('">');
-        __out.push(this.block.title);
-        __out.push('</a>\n  ');
-      }
-    
-      __out.push('\n\n  <!-- UNIVERSAL OUTPUT: -->\n\n    ');
-    
-      if (!(this.block.block_type === 'Text' || !this.block.content)) {
-        __out.push('\n      <div class="description">\n        <div class="content">\n          ');
-        __out.push(this.block.content);
-        __out.push('\n        </div>\n      </div>\n    ');
-      }
-    
-      __out.push('\n\n  </div>\n  \n</div><!-- #block -->');
     
     }).call(this);
     

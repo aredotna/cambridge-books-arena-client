@@ -30,7 +30,7 @@ class exports.MainRouter extends Backbone.Router
         @collectionView = new CollectionView
           logo        : @channel.logo
           model       : @channel
-          collection  : @channel.contents.byNewest()
+          collection  : @channel.contents.bySelection().byNewest()
           mode        : mode
         $('#container')
           .attr('class', 'collection')

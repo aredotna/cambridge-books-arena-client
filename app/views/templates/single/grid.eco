@@ -1,16 +1,16 @@
 <div class="thumb">
   <% if @block.image_thumb: %>
     <div class="image">
-      <a href="/#/<%= @channel.slug %>/show:<%= @block.id %>">
+      <a href="#/<%= @channel.slug %>/show:<%= @block.id %>">
         <img src="<%= @block.image_thumb %>" alt="<%= @block.title %>" />
       </a>
     </div>
   <% else if @block.title: %>
-    <a href="/#/<%= @channel.slug %>/show:<%= @block.id %>">
+    <a href="#/<%= @channel.slug %>/show:<%= @block.id %>">
       <%= _.str.prune(@block.title, 30) %>
     </a>
   <% else: %>
-    <a href="/#/<%= @channel.slug %>/show:<%= @block.id %>">
+    <a href="#/<%= @channel.slug %>/show:<%= @block.id %>">
       Untitled
     </a>
   <% end %>
