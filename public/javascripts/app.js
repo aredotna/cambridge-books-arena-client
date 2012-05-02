@@ -673,7 +673,9 @@
       if (this.channel.title != null) {
         __out.push('\n    <h1>\n      <span>');
         __out.push(__sanitize(this.channel.title));
-        __out.push('</span>\n    </h1>\n  ');
+        __out.push('</span>\n      <a class="arena-mark" href="http://are.na/#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('" target="_blank"></a>\n    </h1>\n  ');
       }
     
       __out.push('\n  ');
@@ -681,9 +683,7 @@
       if ((this.logo.description != null) && this.logo.description !== "") {
         __out.push('\n    <div class="description">\n      ');
         __out.push(this.logo.description);
-        __out.push('\n      <a class="arena-mark" href="http://are.na/#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('" target="_blank"></a>\n    </div>\n  ');
+        __out.push('\n    </div>\n  ');
       }
     
       __out.push('\n</div>\n\n<!-- <nav>\n  <div class="mode">\n    <a href="#/');
