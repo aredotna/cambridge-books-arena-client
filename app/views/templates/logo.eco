@@ -1,4 +1,4 @@
-<div class="info" style="background: transparent url(<%= @logo.image_display %>) no-repeat center center;">
+<div class="info" style="background: transparent url('<%= @logo.image_display %>') no-repeat center center;">
   <% if @channel.title?: %>
     <h1>
       <span><%= @channel.title %></span>
