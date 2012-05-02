@@ -28,7 +28,7 @@ class exports.Channel extends Backbone.Model
 
   setupBlocks: ->
     @contents = new Blocks()
-    @contents.channel = @
+    @contents.channel = this
     @contents.add(@get('blocks'))
     @contents.add(@get('channels'))
     @logo = @contents.shift() if @has('mode')

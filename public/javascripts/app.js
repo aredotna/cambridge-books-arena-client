@@ -105,37 +105,34 @@
   }
 }));
 (this.require.define({
-  "helpers": function(exports, require, module) {
+  "initialize": function(exports, require, module) {
     (function() {
+  var BrunchApplication, MainRouter,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  exports.BrunchApplication = (function() {
+  BrunchApplication = require('helpers').BrunchApplication;
 
-    function BrunchApplication() {
-      var _this = this;
-      $(function() {
-        _this.initialize(_this);
-        return Backbone.history.start();
-      });
+  MainRouter = require('routers/main_router').MainRouter;
+
+  exports.Application = (function(_super) {
+
+    __extends(Application, _super);
+
+    function Application() {
+      Application.__super__.constructor.apply(this, arguments);
     }
 
-    BrunchApplication.prototype.initialize = function() {
-      return null;
+    Application.prototype.initialize = function() {
+      this.loading().start();
+      return this.router = new MainRouter;
     };
 
-    BrunchApplication.prototype.loading = function() {
-      return {
-        start: function() {
-          return $('#container').html('').addClass('loading');
-        },
-        stop: function() {
-          return $('#container').removeClass('loading');
-        }
-      };
-    };
+    return Application;
 
-    return BrunchApplication;
+  })(BrunchApplication);
 
-  })();
+  window.app = new exports.Application;
 
 }).call(this);
 
@@ -542,34 +539,37 @@
   }
 }));
 (this.require.define({
-  "initialize": function(exports, require, module) {
+  "helpers": function(exports, require, module) {
     (function() {
-  var BrunchApplication, MainRouter,
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  BrunchApplication = require('helpers').BrunchApplication;
+  exports.BrunchApplication = (function() {
 
-  MainRouter = require('routers/main_router').MainRouter;
-
-  exports.Application = (function(_super) {
-
-    __extends(Application, _super);
-
-    function Application() {
-      Application.__super__.constructor.apply(this, arguments);
+    function BrunchApplication() {
+      var _this = this;
+      $(function() {
+        _this.initialize(_this);
+        return Backbone.history.start();
+      });
     }
 
-    Application.prototype.initialize = function() {
-      this.loading().start();
-      return this.router = new MainRouter;
+    BrunchApplication.prototype.initialize = function() {
+      return null;
     };
 
-    return Application;
+    BrunchApplication.prototype.loading = function() {
+      return {
+        start: function() {
+          return $('#container').html('').addClass('loading');
+        },
+        stop: function() {
+          return $('#container').removeClass('loading');
+        }
+      };
+    };
 
-  })(BrunchApplication);
+    return BrunchApplication;
 
-  window.app = new exports.Application;
+  })();
 
 }).call(this);
 
@@ -663,11 +663,11 @@
   (function() {
     (function() {
     
-      __out.push('<div class="info" style="background: transparent url(');
+      __out.push('<div class="info" style="background: transparent url(\'');
     
       __out.push(__sanitize(this.logo.image_display));
     
-      __out.push(') no-repeat center center;">\n  ');
+      __out.push('\') no-repeat center center;">\n  ');
     
       if (this.channel.title != null) {
         __out.push('\n    <h1>\n      <span>');
@@ -677,13 +677,15 @@
     
       __out.push('\n  ');
     
-      if (this.logo.description != null) {
+      if ((this.logo.description != null) && this.logo.description !== "") {
         __out.push('\n    <div class="description">\n      ');
         __out.push(this.logo.description);
-        __out.push('\n    </div>\n  ');
+        __out.push('\n      <a class="arena-mark" href="http://are.na/#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('" target="_blank"></a>\n    </div>\n  ');
       }
     
-      __out.push('\n</div>\n\n<nav>\n  <div class="mode">\n    <a href="#/');
+      __out.push('\n</div>\n\n<!-- <nav>\n  <div class="mode">\n    <a href="#/');
     
       __out.push(__sanitize(this.channel.slug));
     
@@ -691,7 +693,7 @@
     
       __out.push(__sanitize(this.channel.slug));
     
-      __out.push('/mode:list">List</a>\n  </div>\n</nav>');
+      __out.push('/mode:list">List</a>\n  </div>\n</nav> -->');
     
     }).call(this);
     
