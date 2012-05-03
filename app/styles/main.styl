@@ -47,7 +47,6 @@ h1, h2, h3, h4
 
 
 h1, h2, h3, h4
-  text-align: left
   font-size: base_font_size
   text-decoration: underline
 
@@ -84,13 +83,18 @@ nav
     background: #fff url('../images/loader.gif') center center no-repeat
 
 #info
-  background-color: #fff
+  background-color: transparent
   position: fixed
   top: 0
   right: 0
   left: sidebar_width
   height: header_height
   pointer-events: none
+  line-height: header_height
+  text-align: center
+  h1
+    span
+      // background-color: #fff
 
 #channel-info
   position: fixed
