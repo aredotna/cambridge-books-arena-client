@@ -11,13 +11,13 @@ class exports.CollectionView extends Backbone.View
     @template = require "./templates/collection/#{@options.mode}"
 
   events:
-    'click .toggle-info' : 'toggleInfo'
+    'click .toggle' : 'toggleInfo'
 
   randomXToY: (minVal, maxVal, floatVal) ->
     minVal + (Math.random() * (maxVal - minVal))
 
   toggleInfo: ->
-    @$('.info').toggleClass('hide')
+    @$('#channel-info').toggleClass('hide')
 
   addAll: ->
     @collection.each @addOne
