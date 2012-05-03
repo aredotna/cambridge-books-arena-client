@@ -3,8 +3,8 @@
 </div>
 
 <% if @logo.description? and @logo.description isnt "": %>
-  <div id="channel-info">
-    <div class="description hide">
+  <div id="channel-info" class="hide">
+    <div class="description">
       <%- @logo.description %>
     </div>
   </div>

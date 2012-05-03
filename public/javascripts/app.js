@@ -879,11 +879,11 @@
     (function() {
       var block, _i, _len, _ref;
     
-      __out.push('<div class="logo" style="background: transparent url(\'');
+      __out.push('<div class="logo">\n  <img src="');
     
       __out.push(__sanitize(this.logo.image_display));
     
-      __out.push('\') no-repeat left center;">\n</div>\n\n<div id="menu-contents" class="hide">\n  ');
+      __out.push('" />\n</div>\n\n<div id="menu-contents" class="hide">\n  ');
     
       _ref = this.blocks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
