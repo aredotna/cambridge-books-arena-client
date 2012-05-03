@@ -13,5 +13,7 @@
 <nav id="mode">
   <a href="#/<%= @channel.slug %>/mode:grid">Grid</a>
   <a href="#/<%= @channel.slug %>/mode:list">List</a>
-  <a href="#" class="toggle">Info</a>
+  <% if @logo.description? and @logo.description isnt "": %>
+    <a href="#" class="toggle">Info</a>
+  <% end %>
 </nav>

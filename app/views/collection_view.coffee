@@ -16,7 +16,8 @@ class exports.CollectionView extends Backbone.View
   randomXToY: (minVal, maxVal, floatVal) ->
     minVal + (Math.random() * (maxVal - minVal))
 
-  toggleInfo: ->
+  toggleInfo: (e) ->
+    e.preventDefault()
     @$('#channel-info').toggleClass('hide')
 
   addAll: ->

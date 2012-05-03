@@ -516,7 +516,8 @@
       return minVal + (Math.random() * (maxVal - minVal));
     };
 
-    CollectionView.prototype.toggleInfo = function() {
+    CollectionView.prototype.toggleInfo = function(e) {
+      e.preventDefault();
       return this.$('#channel-info').toggleClass('hide');
     };
 
@@ -718,7 +719,13 @@
     
       __out.push(__sanitize(this.channel.slug));
     
-      __out.push('/mode:list">List</a>\n  <a href="#" class="toggle">Info</a>\n</nav>');
+      __out.push('/mode:list">List</a>\n  ');
+    
+      if ((this.logo.description != null) && this.logo.description !== "") {
+        __out.push('\n    <a href="#" class="toggle">Info</a>\n  ');
+      }
+    
+      __out.push('\n</nav>');
     
     }).call(this);
     
