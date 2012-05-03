@@ -2,9 +2,6 @@
 
 class exports.Channel extends Backbone.Model
 
-  initialize: ->
-    
-
   url: ->
     "http://are.na/api/v1/channels/#{@get('slug')}.json?callback=?"
 
@@ -31,4 +28,5 @@ class exports.Channel extends Backbone.Model
     @contents.channel = this
     @contents.add(@get('blocks'))
     @contents.add(@get('channels'))
+    @contents.cleanConnections() if logo
     @logo = @contents.shift() if logo

@@ -2,6 +2,8 @@
 
 class exports.Blocks extends Backbone.Collection
   model: Block
+
+  initialize: ->
   
   comparator: (model) -> 
     if not model.isNew() 
@@ -17,13 +19,13 @@ class exports.Blocks extends Backbone.Collection
       else
         block.get('arrangement') is true
 
-  sortedBy: (comparator)->
+  sortedBy: (comparator) ->
     sortedCollection = new exports.Blocks(@models)
     sortedCollection.comparator = comparator
     sortedCollection.sort()
     return sortedCollection
 
-  byNewest: () ->
+  byNewest: ->
     @sortedBy (block) ->
       date = new Date(block.channelConnection().created_at)
       - date.valueOf()
@@ -37,3 +39,12 @@ class exports.Blocks extends Backbone.Collection
     i = @at @indexOf(model)
     return false if `undefined` is i or i < 1
     @at @indexOf(model) - 1
+
+  cleanConnections: ->
+    menu_channels = app.menu.contents.where({type:'Channel'}).map((model)-> model.id)
+
+    @each (model)->
+      connections = _.filter model.get('connections'), (connection)-> _.include menu_channels, connection.channel.id
+      model.set('connections', connections)
+
+      

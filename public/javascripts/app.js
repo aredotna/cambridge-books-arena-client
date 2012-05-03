@@ -169,6 +169,8 @@
 
     Blocks.prototype.model = Block;
 
+    Blocks.prototype.initialize = function() {};
+
     Blocks.prototype.comparator = function(model) {
       if (!model.isNew()) return model.channelConnection().position;
     };
@@ -215,6 +217,22 @@
       i = this.at(this.indexOf(model));
       if (undefined === i || i < 1) return false;
       return this.at(this.indexOf(model) - 1);
+    };
+
+    Blocks.prototype.cleanConnections = function() {
+      var menu_channels;
+      menu_channels = app.menu.contents.where({
+        type: 'Channel'
+      }).map(function(model) {
+        return model.id;
+      });
+      return this.each(function(model) {
+        var connections;
+        connections = _.filter(model.get('connections'), function(connection) {
+          return _.include(menu_channels, connection.channel.id);
+        });
+        return model.set('connections', connections);
+      });
     };
 
     return Blocks;
@@ -308,8 +326,6 @@
       Channel.__super__.constructor.apply(this, arguments);
     }
 
-    Channel.prototype.initialize = function() {};
-
     Channel.prototype.url = function() {
       return "http://are.na/api/v1/channels/" + (this.get('slug')) + ".json?callback=?";
     };
@@ -345,6 +361,7 @@
       this.contents.channel = this;
       this.contents.add(this.get('blocks'));
       this.contents.add(this.get('channels'));
+      if (logo) this.contents.cleanConnections();
       if (logo) return this.logo = this.contents.shift();
     };
 
@@ -523,7 +540,6 @@
     };
 
     CollectionView.prototype.render = function() {
-      console.log(this.options);
       this.$el.html(this.logo({
         logo: this.options.logo.toJSON(),
         channel: this.model.toJSON()
