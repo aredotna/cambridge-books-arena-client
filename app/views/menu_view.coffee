@@ -3,7 +3,14 @@
 class exports.MenuView extends Backbone.View
   id: 'collection'
 
-  initialize: -> @template = require "./templates/collection/menu"
+  initialize: -> 
+    @template = require "./templates/collection/menu"
+
+  events:
+    'click .logo' : 'toggleMenu'
+
+  toggleMenu: ->
+    @$('#menu-contents').toggleClass 'hide'
 
   addAll: ->
     @collection.each @addOne
@@ -18,8 +25,12 @@ class exports.MenuView extends Backbone.View
     @$('#blocks').append view.render().el
 
   render: ->
+    @logo = @collection.shift()
+
+    console.log 'collection', @collection, 'logo', @logo
     @$el.html @template
       channel : @model.toJSON()
+      logo    : @logo.toJSON()
       blocks  : @collection.toJSON()
 
     @addAll()

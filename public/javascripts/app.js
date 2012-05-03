@@ -72,6 +72,14 @@
       return this.template = require("./templates/collection/menu");
     };
 
+    MenuView.prototype.events = {
+      'click .logo': 'toggleMenu'
+    };
+
+    MenuView.prototype.toggleMenu = function() {
+      return this.$('#menu-contents').toggleClass('hide');
+    };
+
     MenuView.prototype.addAll = function() {
       return this.collection.each(this.addOne);
     };
@@ -88,8 +96,11 @@
     };
 
     MenuView.prototype.render = function() {
+      this.logo = this.collection.shift();
+      console.log('collection', this.collection, 'logo', this.logo);
       this.$el.html(this.template({
         channel: this.model.toJSON(),
+        logo: this.logo.toJSON(),
         blocks: this.collection.toJSON()
       }));
       this.addAll();
@@ -1112,55 +1123,61 @@
     (function() {
       var block, _i, _len, _ref;
     
+      __out.push('<div class="logo">\n  <img src="');
+    
+      __out.push(__sanitize(this.logo.image_display));
+    
+      __out.push('" />\n</div>\n\n<div id="menu-contents" class="hide">\n  ');
+    
       _ref = this.blocks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         block = _ref[_i];
-        __out.push('\n  <div class="block ');
+        __out.push('\n    <div class="block ');
         __out.push(block.block_type);
-        __out.push('">\n    ');
+        __out.push('">\n      ');
         if (block.block_type === 'Image') {
-          __out.push('\n      <!-- IMAGE -->\n      <img src="');
+          __out.push('\n        <!-- IMAGE -->\n        <img src="');
           __out.push(__sanitize(block.image_display));
           __out.push('" alt="');
           __out.push(__sanitize(block.title));
-          __out.push('" />\n    ');
+          __out.push('" />\n      ');
         } else if (block.block_type === 'Link') {
-          __out.push('\n      <!-- LINK -->\n      ');
+          __out.push('\n        <!-- LINK -->\n        ');
           if (block.image_display) {
-            __out.push('\n        <a href="');
+            __out.push('\n          <a href="');
             __out.push(__sanitize(block.link_url));
-            __out.push('" class="external" target="_blank">\n          <img src="');
+            __out.push('" class="external" target="_blank">\n            <img src="');
             __out.push(__sanitize(block.image_display));
             __out.push('" alt="');
             __out.push(__sanitize(block.title));
-            __out.push('" />\n        </a>\n      ');
+            __out.push('" />\n          </a>\n        ');
           } else {
-            __out.push('\n        <p>\n          <a href="');
+            __out.push('\n          <p>\n            <a href="');
             __out.push(__sanitize(block.link_url));
             __out.push('" class="external url" target="_blank">');
             __out.push(__sanitize(block.link_url));
-            __out.push('</a>\n        </p>\n      ');
+            __out.push('</a>\n          </p>\n        ');
           }
-          __out.push('\n    ');
+          __out.push('\n      ');
         } else if (block.block_type === 'Text') {
-          __out.push('\n      <!-- TEXT -->\n      <div class="content">\n        ');
+          __out.push('\n        <!-- TEXT -->\n        <div class="content">\n          ');
           __out.push(block.content);
-          __out.push('\n      </div>\n    ');
+          __out.push('\n        </div>\n      ');
         } else if (block.block_type === 'Channel') {
-          __out.push('\n      <!-- TEXT -->\n        ');
+          __out.push('\n        <!-- TEXT -->\n          ');
           if (block.published === true) {
-            __out.push('\n          <a href="#/');
+            __out.push('\n            <a href="#/');
             __out.push(__sanitize(block.slug));
             __out.push('">');
             __out.push(block.title);
-            __out.push('</a>\n        ');
+            __out.push('</a>\n          ');
           }
-          __out.push('\n    ');
+          __out.push('\n      ');
         }
-        __out.push('\n  </div>\n');
+        __out.push('\n    </div>\n  ');
       }
     
-      __out.push('\n');
+      __out.push('\n</div>\n');
     
     }).call(this);
     
