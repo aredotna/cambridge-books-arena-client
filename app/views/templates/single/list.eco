@@ -1,22 +1,10 @@
-<% if @prev or @next: %>
-  <nav class="pagination">
-    <% if @prev: %>
-      <a href="#/<%= @channel.slug %>/show:<%= @prev.id %>" class="previous">Previous</a>
-    <% end %>
-    <% if @next: %>
-      <a href="#/<%= @channel.slug %>/show:<%= @next.id %>" class="next">Next</a>
-    <% end %>
-    <% if @channel.mode: %>
-      <a href="#/<%= @channel.slug %>/mode:<%= @channel.mode %>" class="up">Up</a>
-    <% else: %>
-      <a href="#/<%= @channel.slug %>" class="up">Up</a>
-    <% end %>
-  </nav>
-<% end %>
+<article>
+  <% if @prev or @next: %>
+    <nav class="pagination">
+      <a href="#/<%= @channel.slug %>" class="up">Back</a>
+    </nav>
+  <% end %>
 
-<div id="block_<%= @block.id %>" class="full <%= @block.block_type.toLowerCase() %>" data-type="<%= @block.block_type %>">
-
-  <!-- TYPE-SPECIFIC OUTPUT: -->
   <% if @block.block_type is 'Media': %>
     <!-- MEDIA -->
     <div class="embed">
@@ -39,7 +27,6 @@
       <a href="<%= @block.link_url %>" class="external" target="_blank">
         <img src="<%= @block.image_display %>" alt="<%= @block.title %>" />
       </a>
-      <a href="<%= @block.link_url %>" class="external url" target="_blank"><%= @block.link_url %></a>
     <% else: %>
       <p>
         <a href="<%= @block.link_url %>" class="external url" target="_blank"><%= @block.link_url %></a>
@@ -51,35 +38,33 @@
       <%- @block.content %>
     </div>
   <% else if @block.block_type is 'Channel': %>
-    <!-- TEXT -->
+    <!-- CHANNEL -->
       <a href="#/<%= @block.slug %>"><%- @block.title %></a>
   <% end %>
+</article>
 
-  <!-- UNIVERSAL OUTPUT: -->
-    <div class="content-right">
-      <% unless @block.block_type is 'Text' or !@block.description: %>
-        <div class="description">
-          <div class="content">
-            <%- @block.description %>
-          </div>
-        </div>
-      <% end %>
-
-    <!-- Connections -->
-      <% if @block.connections.length > 1 : %>
-        <strong>See also: </strong>
-        <ul>
-        <% for connection in @block.connections: %>
-          <% if connection.channel_id isnt @channel.id and connection.channel.published isnt false : %>
-            <li><a href="/#/<%= connection.channel.slug %>"><%= connection.connection_title %></a></li>
-          <% end %>
-        <% end %>
-        <ul>
-      <% end %> 
+<aside>
+  <!-- METADATA -->
+  <% if @block.title?: %>
+    <h4><%= @block.title %></h4>
+  <% end %>
+  <% unless @block.block_type is 'Text' or !@block.description: %>
+    <div class="description">
+      <%- @block.description %>
     </div>
+  <% end %>
 
-
-
+  <!-- CONNECTIONS -->
+  <div class="connections">
+    <% if @block.connections.length > 1 : %>
+      <h4>See also</h4>
+      <ul>
+      <% for connection in @block.connections: %>
+        <% if connection.channel_id isnt @channel.id and connection.channel.published isnt false : %>
+          <li><a href="/#/<%= connection.channel.slug %>"><%= connection.connection_title %></a></li>
+        <% end %>
+      <% end %>
+      <ul>
+    <% end %>
   </div>
-  
-</div><!-- #block -->
+</aside>

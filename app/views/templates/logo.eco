@@ -1,19 +1,17 @@
-<div class="info">
-    <img src="<%= @logo.image_display %>" />
-<!--     <h1>
-    <a class="arena-mark" href="http://are.na/#/<%= @channel.slug %>" target="_blank"></a>
-    </h1> -->
-  <% if @logo.description? and @logo.description isnt "": %>
+<div id="info" style="background: transparent url('<%= @logo.image_thumb %>') no-repeat center center;">
+  <!-- <h1><a class="arena-mark" href="http://are.na/#/<%= @channel.slug %>" target="_blank"></a></h1> -->
+</div>
+
+<% if @logo.description? and @logo.description isnt "": %>
+  <div id="channel-info">
     <div class="description hide">
       <%- @logo.description %>
     </div>
-  <% end %>
-</div>
-
-<nav>
-  <div class="mode">
-    <a href="#/<%= @channel.slug %>/mode:grid">Grid</a>
-    <span class="meta-sep">|</span>
-    <a href="#/<%= @channel.slug %>/mode:list">List</a>
   </div>
+<% end %>
+
+<nav id="mode">
+  <a href="#/<%= @channel.slug %>/mode:grid">Grid</a>
+  <a href="#/<%= @channel.slug %>/mode:list">List</a>
+  <a href="#" class="toggle">Info</a>
 </nav>

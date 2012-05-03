@@ -136,10 +136,11 @@
     BrunchApplication.prototype.loading = function() {
       return {
         start: function() {
-          return $('#container').html('').addClass('loading');
+          $('body').addClass('loading');
+          return $('#container').html('');
         },
         stop: function() {
-          return $('#container').removeClass('loading');
+          return $('body').removeClass('loading');
         }
       };
     };
@@ -458,7 +459,7 @@
       BlockView.__super__.constructor.apply(this, arguments);
     }
 
-    BlockView.prototype.className = 'block';
+    BlockView.prototype.className = "block full";
 
     BlockView.prototype.initialize = function() {
       return this.template = require("./templates/single/" + this.options.mode);
@@ -638,6 +639,82 @@
   }
 }));
 (this.require.define({
+  "views/templates/logo": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      __out.push('<div id="info" style="background: transparent url(\'');
+    
+      __out.push(__sanitize(this.logo.image_thumb));
+    
+      __out.push('\') no-repeat center center;">\n  <!-- <h1><a class="arena-mark" href="http://are.na/#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('" target="_blank"></a></h1> -->\n</div>\n\n');
+    
+      if ((this.logo.description != null) && this.logo.description !== "") {
+        __out.push('\n  <div id="channel-info">\n    <div class="description hide">\n      ');
+        __out.push(this.logo.description);
+        __out.push('\n    </div>\n  </div>\n');
+      }
+    
+      __out.push('\n\n<nav id="mode">\n  <a href="#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('/mode:grid">Grid</a>\n  <a href="#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('/mode:list">List</a>\n  <a href="#" class="toggle">Info</a>\n</nav>');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
   "views/templates/collection/grid": function(exports, require, module) {
     module.exports = function (__obj) {
   if (!__obj) __obj = {};
@@ -732,6 +809,113 @@
     (function() {
     
       __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/collection/menu": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+      var block, _i, _len, _ref;
+    
+      __out.push('<div class="logo">\n  <img src="');
+    
+      __out.push(__sanitize(this.logo.image_display));
+    
+      __out.push('" />\n</div>\n\n<div id="menu-contents" class="hide">\n  ');
+    
+      _ref = this.blocks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        block = _ref[_i];
+        __out.push('\n    <div class="block ');
+        __out.push(block.block_type);
+        __out.push('">\n      ');
+        if (block.block_type === 'Image') {
+          __out.push('\n        <!-- IMAGE -->\n        <img src="');
+          __out.push(__sanitize(block.image_display));
+          __out.push('" alt="');
+          __out.push(__sanitize(block.title));
+          __out.push('" />\n      ');
+        } else if (block.block_type === 'Link') {
+          __out.push('\n        <!-- LINK -->\n        ');
+          if (block.image_display) {
+            __out.push('\n          <a href="');
+            __out.push(__sanitize(block.link_url));
+            __out.push('" class="external" target="_blank">\n            <img src="');
+            __out.push(__sanitize(block.image_display));
+            __out.push('" alt="');
+            __out.push(__sanitize(block.title));
+            __out.push('" />\n          </a>\n        ');
+          } else {
+            __out.push('\n          <p>\n            <a href="');
+            __out.push(__sanitize(block.link_url));
+            __out.push('" class="external url" target="_blank">');
+            __out.push(__sanitize(block.link_url));
+            __out.push('</a>\n          </p>\n        ');
+          }
+          __out.push('\n      ');
+        } else if (block.block_type === 'Text') {
+          __out.push('\n        <!-- TEXT -->\n        <div class="content">\n          ');
+          __out.push(block.content);
+          __out.push('\n        </div>\n      ');
+        } else if (block.block_type === 'Channel') {
+          __out.push('\n        <!-- TEXT -->\n          ');
+          if (block.published === true) {
+            __out.push('\n            <a href="#/');
+            __out.push(__sanitize(block.slug));
+            __out.push('">');
+            __out.push(block.title);
+            __out.push('</a>\n          ');
+          }
+          __out.push('\n      ');
+        }
+        __out.push('\n    </div>\n  ');
+      }
+    
+      __out.push('\n</div>\n');
     
     }).call(this);
     
@@ -864,51 +1048,15 @@
     (function() {
       var connection, _i, _len, _ref;
     
+      __out.push('<article>\n  ');
+    
       if (this.prev || this.next) {
-        __out.push('\n  <nav class="pagination">\n    ');
-        if (this.prev) {
-          __out.push('\n      <a href="#/');
-          __out.push(__sanitize(this.channel.slug));
-          __out.push('/show:');
-          __out.push(__sanitize(this.prev.id));
-          __out.push('" class="previous">Previous</a>\n    ');
-        }
-        __out.push('\n    ');
-        if (this.next) {
-          __out.push('\n      <a href="#/');
-          __out.push(__sanitize(this.channel.slug));
-          __out.push('/show:');
-          __out.push(__sanitize(this.next.id));
-          __out.push('" class="next">Next</a>\n    ');
-        }
-        __out.push('\n    ');
-        if (this.channel.mode) {
-          __out.push('\n      <a href="#/');
-          __out.push(__sanitize(this.channel.slug));
-          __out.push('/mode:');
-          __out.push(__sanitize(this.channel.mode));
-          __out.push('" class="up">Up</a>\n    ');
-        } else {
-          __out.push('\n      <a href="#/');
-          __out.push(__sanitize(this.channel.slug));
-          __out.push('" class="up">Up</a>\n    ');
-        }
-        __out.push('\n  </nav>\n');
+        __out.push('\n    <nav class="pagination">\n      <a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('" class="up">Back</a>\n    </nav>\n  ');
       }
     
-      __out.push('\n\n<div id="block_');
-    
-      __out.push(__sanitize(this.block.id));
-    
-      __out.push('" class="full ');
-    
-      __out.push(__sanitize(this.block.block_type.toLowerCase()));
-    
-      __out.push('" data-type="');
-    
-      __out.push(__sanitize(this.block.block_type));
-    
-      __out.push('">\n\n  <!-- TYPE-SPECIFIC OUTPUT: -->\n  ');
+      __out.push('\n\n  ');
     
       if (this.block.block_type === 'Media') {
         __out.push('\n    <!-- MEDIA -->\n    <div class="embed">\n      ');
@@ -941,11 +1089,7 @@
           __out.push(__sanitize(this.block.image_display));
           __out.push('" alt="');
           __out.push(__sanitize(this.block.title));
-          __out.push('" />\n      </a>\n      <a href="');
-          __out.push(__sanitize(this.block.link_url));
-          __out.push('" class="external url" target="_blank">');
-          __out.push(__sanitize(this.block.link_url));
-          __out.push('</a>\n    ');
+          __out.push('" />\n      </a>\n    ');
         } else {
           __out.push('\n      <p>\n        <a href="');
           __out.push(__sanitize(this.block.link_url));
@@ -959,225 +1103,50 @@
         __out.push(this.block.content);
         __out.push('\n    </div>\n  ');
       } else if (this.block.block_type === 'Channel') {
-        __out.push('\n    <!-- TEXT -->\n      <a href="#/');
+        __out.push('\n    <!-- CHANNEL -->\n      <a href="#/');
         __out.push(__sanitize(this.block.slug));
         __out.push('">');
         __out.push(this.block.title);
         __out.push('</a>\n  ');
       }
     
-      __out.push('\n\n  <!-- UNIVERSAL OUTPUT: -->\n    <div class="content-right">\n      ');
+      __out.push('\n</article>\n\n<aside>\n  <!-- METADATA -->\n  ');
     
-      if (!(this.block.block_type === 'Text' || !this.block.description)) {
-        __out.push('\n        <div class="description">\n          <div class="content">\n            ');
-        __out.push(this.block.description);
-        __out.push('\n          </div>\n        </div>\n      ');
+      if (this.block.title != null) {
+        __out.push('\n    <h4>');
+        __out.push(__sanitize(this.block.title));
+        __out.push('</h4>\n  ');
       }
     
-      __out.push('\n\n    <!-- Connections -->\n      ');
+      __out.push('\n  ');
+    
+      if (!(this.block.block_type === 'Text' || !this.block.description)) {
+        __out.push('\n    <div class="description">\n      ');
+        __out.push(this.block.description);
+        __out.push('\n    </div>\n  ');
+      }
+    
+      __out.push('\n\n  <!-- CONNECTIONS -->\n  <div class="connections">\n    ');
     
       if (this.block.connections.length > 1) {
-        __out.push('\n        <strong>See also: </strong>\n        <ul>\n        ');
+        __out.push('\n      <h4>See also</h4>\n      <ul>\n      ');
         _ref = this.block.connections;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           connection = _ref[_i];
-          __out.push('\n          ');
+          __out.push('\n        ');
           if (connection.channel_id !== this.channel.id && connection.channel.published !== false) {
-            __out.push('\n            <li><a href="/#/');
+            __out.push('\n          <li><a href="/#/');
             __out.push(__sanitize(connection.channel.slug));
             __out.push('">');
             __out.push(__sanitize(connection.connection_title));
-            __out.push('</a></li>\n          ');
-          }
-          __out.push('\n        ');
-        }
-        __out.push('\n        <ul>\n      ');
-      }
-    
-      __out.push(' \n    </div>\n\n\n\n  </div>\n  \n</div><!-- #block -->');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
-  "views/templates/logo": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-    
-      __out.push('<div class="info">\n    <img src="');
-    
-      __out.push(__sanitize(this.logo.image_display));
-    
-      __out.push('" />\n<!--     <h1>\n    <a class="arena-mark" href="http://are.na/#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('" target="_blank"></a>\n    </h1> -->\n  ');
-    
-      if ((this.logo.description != null) && this.logo.description !== "") {
-        __out.push('\n    <div class="description hide">\n      ');
-        __out.push(this.logo.description);
-        __out.push('\n    </div>\n  ');
-      }
-    
-      __out.push('\n</div>\n\n<nav>\n  <div class="mode">\n    <a href="#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('/mode:grid">Grid</a>\n    <span class="meta-sep">|</span>\n    <a href="#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('/mode:list">List</a>\n  </div>\n</nav>\n');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
-  "views/templates/collection/menu": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-      var block, _i, _len, _ref;
-    
-      __out.push('<div class="logo">\n  <img src="');
-    
-      __out.push(__sanitize(this.logo.image_display));
-    
-      __out.push('" />\n</div>\n\n<div id="menu-contents" class="hide">\n  ');
-    
-      _ref = this.blocks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        block = _ref[_i];
-        __out.push('\n    <div class="block ');
-        __out.push(block.block_type);
-        __out.push('">\n      ');
-        if (block.block_type === 'Image') {
-          __out.push('\n        <!-- IMAGE -->\n        <img src="');
-          __out.push(__sanitize(block.image_display));
-          __out.push('" alt="');
-          __out.push(__sanitize(block.title));
-          __out.push('" />\n      ');
-        } else if (block.block_type === 'Link') {
-          __out.push('\n        <!-- LINK -->\n        ');
-          if (block.image_display) {
-            __out.push('\n          <a href="');
-            __out.push(__sanitize(block.link_url));
-            __out.push('" class="external" target="_blank">\n            <img src="');
-            __out.push(__sanitize(block.image_display));
-            __out.push('" alt="');
-            __out.push(__sanitize(block.title));
-            __out.push('" />\n          </a>\n        ');
-          } else {
-            __out.push('\n          <p>\n            <a href="');
-            __out.push(__sanitize(block.link_url));
-            __out.push('" class="external url" target="_blank">');
-            __out.push(__sanitize(block.link_url));
-            __out.push('</a>\n          </p>\n        ');
-          }
-          __out.push('\n      ');
-        } else if (block.block_type === 'Text') {
-          __out.push('\n        <!-- TEXT -->\n        <div class="content">\n          ');
-          __out.push(block.content);
-          __out.push('\n        </div>\n      ');
-        } else if (block.block_type === 'Channel') {
-          __out.push('\n        <!-- TEXT -->\n          ');
-          if (block.published === true) {
-            __out.push('\n            <a href="#/');
-            __out.push(__sanitize(block.slug));
-            __out.push('">');
-            __out.push(block.title);
-            __out.push('</a>\n          ');
+            __out.push('</a></li>\n        ');
           }
           __out.push('\n      ');
         }
-        __out.push('\n    </div>\n  ');
+        __out.push('\n      <ul>\n    ');
       }
     
-      __out.push('\n</div>\n');
+      __out.push('\n  </div>\n</aside>\n');
     
     }).call(this);
     

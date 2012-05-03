@@ -1,5 +1,5 @@
 class exports.BlockView extends Backbone.View
-  className: 'block'
+  className: "block full"
 
   initialize: ->
     @template = require "./templates/single/#{@options.mode}"
