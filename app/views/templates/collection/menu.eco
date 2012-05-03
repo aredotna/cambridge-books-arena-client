@@ -1,5 +1,4 @@
-<div class="logo">
-  <img src="<%= @logo.image_display %>" />
+<div class="logo" style="background: transparent url('<%= @logo.image_display %>') no-repeat left center;">
 </div>
 
 <div id="menu-contents" class="hide">

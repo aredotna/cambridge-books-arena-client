@@ -7,6 +7,7 @@ base_line_height = 20px
 text_color       = #000
 link_color       = #13f
 sidebar_width    = 220px
+header_height    = 116px
 
 // BASE
 // ----
@@ -71,6 +72,8 @@ nav
     font-family: sans-serif
     margin-top: base_line_height
   .logo
+    width: 100%
+    height: 116px
     cursor: pointer
 
 #container
@@ -84,8 +87,8 @@ nav
   position: fixed
   top: 0
   right: 0
-  bottom: 0
-  left: 0
+  left: sidebar_width
+  height: header_height
   pointer-events: none
 
 #channel-info
@@ -116,6 +119,10 @@ nav
 
 // GRID
 // ----
+
+#blocks
+  padding-top: header_height
+
 #blocks.grid
   .block
     display: inline-block
@@ -130,7 +137,7 @@ nav
       box-shadow: 4px 4px 4px 0px #ccc
 
 #blocks.list
-  padding-right: 240px
+  // padding-right: 240px
 
 #blocks.list .block, #single
   clearfix()
