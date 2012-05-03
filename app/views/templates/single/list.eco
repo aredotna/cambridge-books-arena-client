@@ -56,27 +56,27 @@
   <% end %>
 
   <!-- UNIVERSAL OUTPUT: -->
-
-    <% unless @block.block_type is 'Text' or !@block.description: %>
-      <div class="description">
-        <div class="content">
-          <%- @block.description %>
+    <div class="content-right">
+      <% unless @block.block_type is 'Text' or !@block.description: %>
+        <div class="description">
+          <div class="content">
+            <%- @block.description %>
+          </div>
         </div>
-      </div>
-    <% end %>
-
-  <!-- Connections -->
-    <% if @block.connections.length > 1 : %>
-      <ul>
-      <% for connection in @block.connections: %>
-
-        <% if connection.channel_id isnt @channel.id and connection.channel.published isnt false : %>
-          <li><a href="/#/<%= connection.channel.slug %>"><%= connection.connection_title %></a></li>
-        <% end %>
-
       <% end %>
-      <ul>
-    <% end %> 
+
+    <!-- Connections -->
+      <% if @block.connections.length > 1 : %>
+        <strong>See also: </strong>
+        <ul>
+        <% for connection in @block.connections: %>
+          <% if connection.channel_id isnt @channel.id and connection.channel.published isnt false : %>
+            <li><a href="/#/<%= connection.channel.slug %>"><%= connection.connection_title %></a></li>
+          <% end %>
+        <% end %>
+        <ul>
+      <% end %> 
+    </div>
 
 
 

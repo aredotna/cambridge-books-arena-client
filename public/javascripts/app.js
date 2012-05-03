@@ -955,35 +955,35 @@
         __out.push('</a>\n  ');
       }
     
-      __out.push('\n\n  <!-- UNIVERSAL OUTPUT: -->\n\n    ');
+      __out.push('\n\n  <!-- UNIVERSAL OUTPUT: -->\n    <div class="content-right">\n      ');
     
       if (!(this.block.block_type === 'Text' || !this.block.description)) {
-        __out.push('\n      <div class="description">\n        <div class="content">\n          ');
+        __out.push('\n        <div class="description">\n          <div class="content">\n            ');
         __out.push(this.block.description);
-        __out.push('\n        </div>\n      </div>\n    ');
+        __out.push('\n          </div>\n        </div>\n      ');
       }
     
-      __out.push('\n\n  <!-- Connections -->\n    ');
+      __out.push('\n\n    <!-- Connections -->\n      ');
     
       if (this.block.connections.length > 1) {
-        __out.push('\n      <ul>\n      ');
+        __out.push('\n        <strong>See also: </strong>\n        <ul>\n        ');
         _ref = this.block.connections;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           connection = _ref[_i];
-          __out.push('\n\n        ');
+          __out.push('\n          ');
           if (connection.channel_id !== this.channel.id && connection.channel.published !== false) {
-            __out.push('\n          <li><a href="/#/');
+            __out.push('\n            <li><a href="/#/');
             __out.push(__sanitize(connection.channel.slug));
             __out.push('">');
             __out.push(__sanitize(connection.connection_title));
-            __out.push('</a></li>\n        ');
+            __out.push('</a></li>\n          ');
           }
-          __out.push('\n\n      ');
+          __out.push('\n        ');
         }
-        __out.push('\n      <ul>\n    ');
+        __out.push('\n        <ul>\n      ');
       }
     
-      __out.push(' \n\n\n\n  </div>\n  \n</div><!-- #block -->');
+      __out.push(' \n    </div>\n\n\n\n  </div>\n  \n</div><!-- #block -->');
     
     }).call(this);
     
@@ -1035,29 +1035,23 @@
   (function() {
     (function() {
     
-      __out.push('<div class="info" style="background: transparent url(\'');
+      __out.push('<div class="info">\n    <img src="');
     
       __out.push(__sanitize(this.logo.image_display));
     
-      __out.push('\') no-repeat center center;">\n  ');
+      __out.push('" />\n<!--     <h1>\n    <a class="arena-mark" href="http://are.na/#/');
     
-      if (this.channel.title != null) {
-        __out.push('\n    <h1>\n      <span>');
-        __out.push(__sanitize(this.channel.title));
-        __out.push('</span>\n      <a class="arena-mark" href="http://are.na/#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('" target="_blank"></a>\n    </h1>\n  ');
-      }
+      __out.push(__sanitize(this.channel.slug));
     
-      __out.push('\n  ');
+      __out.push('" target="_blank"></a>\n    </h1> -->\n  ');
     
       if ((this.logo.description != null) && this.logo.description !== "") {
-        __out.push('\n    <div class="description">\n      ');
+        __out.push('\n    <div class="description hide">\n      ');
         __out.push(this.logo.description);
         __out.push('\n    </div>\n  ');
       }
     
-      __out.push('\n</div>\n\n<!-- <nav>\n  <div class="mode">\n    <a href="#/');
+      __out.push('\n</div>\n\n<nav>\n  <div class="mode">\n    <a href="#/');
     
       __out.push(__sanitize(this.channel.slug));
     
@@ -1065,7 +1059,7 @@
     
       __out.push(__sanitize(this.channel.slug));
     
-      __out.push('/mode:list">List</a>\n  </div>\n</nav> -->\n');
+      __out.push('/mode:list">List</a>\n  </div>\n</nav>\n');
     
     }).call(this);
     
