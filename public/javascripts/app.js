@@ -134,11 +134,10 @@
     BrunchApplication.prototype.loading = function() {
       return {
         start: function() {
-          $('body').addClass('loading');
-          return $('#container').html('');
+          return $('#container').html('').addClass('loading');
         },
         stop: function() {
-          return $('body').removeClass('loading');
+          return $('#container').removeClass('loading');
         }
       };
     };
@@ -514,7 +513,7 @@
     };
 
     CollectionView.prototype.events = {
-      'click .toggle-info': 'toggleInfo'
+      'click .toggle': 'toggleInfo'
     };
 
     CollectionView.prototype.randomXToY = function(minVal, maxVal, floatVal) {
@@ -522,7 +521,7 @@
     };
 
     CollectionView.prototype.toggleInfo = function() {
-      return this.$('.info').toggleClass('hide');
+      return this.$('#channel-info').toggleClass('hide');
     };
 
     CollectionView.prototype.addAll = function() {
@@ -709,7 +708,7 @@
       __out.push('" target="_blank"></a></h1> -->\n</div>\n\n');
     
       if ((this.logo.description != null) && this.logo.description !== "") {
-        __out.push('\n  <div id="channel-info">\n    <div class="description hide">\n      ');
+        __out.push('\n  <div id="channel-info" class="hide">\n    <div class="description">\n      ');
         __out.push(this.logo.description);
         __out.push('\n    </div>\n  </div>\n');
       }
@@ -879,11 +878,11 @@
     (function() {
       var block, _i, _len, _ref;
     
-      __out.push('<div class="logo">\n  <img src="');
+      __out.push('<div class="logo" style="background: transparent url(\'');
     
       __out.push(__sanitize(this.logo.image_display));
     
-      __out.push('" />\n</div>\n\n<div id="menu-contents" class="hide">\n  ');
+      __out.push('\') no-repeat left center;">\n</div>\n\n<div id="menu-contents" class="hide">\n  ');
     
       _ref = this.blocks;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {

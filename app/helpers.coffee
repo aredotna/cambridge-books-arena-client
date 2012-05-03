@@ -8,7 +8,6 @@ class exports.BrunchApplication
 
   loading: ->
     start: ->
-      $('body').addClass('loading')
-      $('#container').html('')
+      $('#container').html('').addClass('loading')
     stop: ->
-      $('body').removeClass('loading')
+      $('#container').removeClass('loading')
