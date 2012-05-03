@@ -97,7 +97,6 @@
 
     MenuView.prototype.render = function() {
       this.logo = this.collection.shift();
-      console.log('collection', this.collection, 'logo', this.logo);
       this.$el.html(this.template({
         channel: this.model.toJSON(),
         logo: this.logo.toJSON(),
@@ -124,8 +123,7 @@
     function BrunchApplication() {
       var _this = this;
       $(function() {
-        _this.initialize(_this);
-        return Backbone.history.start();
+        return _this.initialize(_this);
       });
     }
 
@@ -391,18 +389,7 @@
     };
 
     MainRouter.prototype.initialize = function() {
-      var _this = this;
-      this.channel = new Channel();
-      this.menu = new Channel();
-      return $.when(this.menu.maybeLoad("cambridge-book", 'grid', false)).then(function() {
-        var menuView;
-        console.log('menuy', _this.menu);
-        menuView = new MenuView({
-          model: _this.menu,
-          collection: _this.menu.contents.bySelection()
-        });
-        return $('#menu').html(menuView.render().el);
-      });
+      return this.channel = new Channel();
     };
 
     MainRouter.prototype.collection = function(slug, mode) {
@@ -560,13 +547,17 @@
 (this.require.define({
   "initialize": function(exports, require, module) {
     (function() {
-  var BrunchApplication, MainRouter,
+  var BrunchApplication, Channel, MainRouter, MenuView,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   BrunchApplication = require('helpers').BrunchApplication;
 
   MainRouter = require('routers/main_router').MainRouter;
+
+  Channel = require('models/channel').Channel;
+
+  MenuView = require('views/menu_view').MenuView;
 
   exports.Application = (function(_super) {
 
@@ -577,8 +568,20 @@
     }
 
     Application.prototype.initialize = function() {
+      var _this = this;
       this.loading().start();
-      return this.router = new MainRouter;
+      this.menu = new Channel();
+      return $.when(this.menu.maybeLoad("cambridge-book", 'grid', false)).then(function() {
+        var menuView;
+        console.log('menuy', _this.menu);
+        menuView = new MenuView({
+          model: _this.menu,
+          collection: _this.menu.contents.bySelection()
+        });
+        $('#menu').html(menuView.render().el);
+        _this.router = new MainRouter;
+        return Backbone.history.start();
+      });
     };
 
     return Application;

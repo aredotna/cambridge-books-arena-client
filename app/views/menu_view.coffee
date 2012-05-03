@@ -27,7 +27,6 @@ class exports.MenuView extends Backbone.View
   render: ->
     @logo = @collection.shift()
 
-    console.log 'collection', @collection, 'logo', @logo
     @$el.html @template
       channel : @model.toJSON()
       logo    : @logo.toJSON()

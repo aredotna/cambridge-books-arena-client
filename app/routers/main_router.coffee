@@ -13,15 +13,6 @@ class exports.MainRouter extends Backbone.Router
 
   initialize: ->
     @channel = new Channel()
-    @menu = new Channel()
-
-    $.when(@menu.maybeLoad "cambridge-book", 'grid', false).then =>
-      console.log('menuy', @menu)
-      menuView = new MenuView
-        model       : @menu
-        collection  : @menu.contents.bySelection()
-
-      $('#menu').html menuView.render().el
 
   collection: (slug, mode = 'list') ->
     window.scroll(0,0)
