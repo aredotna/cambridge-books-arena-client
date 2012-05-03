@@ -208,7 +208,8 @@ body.loading{background:#fff url("../images/loader.gif") center center no-repeat
 h1,h2,h3,h4{font-family:sans-serif;font-weight:bold}
 h1,h2,h3,h4{text-align:left;font-size:14px;text-decoration:underline}
 nav{margin:20px 0;text-align:left}
-#menu{position:fixed;top:20px;bottom:20px;left:20px;width:330px;overflow-y:scroll;overflow-x:hidden;background-color:#fff;padding:20px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box}
+#menu{position:fixed;top:20px;bottom:20px;left:20px;width:330px;overflow-y:scroll;overflow-x:hidden;background-color:#fff;padding:20px;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
+#menu .logo{cursor:pointer}
 #container{min-height:100%;margin-left:350px;padding:20px;}
 #container.loading{background:#fff url("../images/loader.gif") center center no-repeat}
 .info{margin:0 0 20px 0;position:fixed;}
