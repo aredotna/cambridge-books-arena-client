@@ -8,8 +8,9 @@ class exports.Application extends BrunchApplication
     @loading().start()
     @menu = new Channel()
     
+    # load initial menu and then start loading channels
+
     $.when(@menu.maybeLoad "cambridge-book", 'grid', false).then =>
-      console.log('menuy', @menu)
       menuView = new MenuView
         model       : @menu
         collection  : @menu.contents.bySelection()

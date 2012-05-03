@@ -573,7 +573,6 @@
       this.menu = new Channel();
       return $.when(this.menu.maybeLoad("cambridge-book", 'grid', false)).then(function() {
         var menuView;
-        console.log('menuy', _this.menu);
         menuView = new MenuView({
           model: _this.menu,
           collection: _this.menu.contents.bySelection()
