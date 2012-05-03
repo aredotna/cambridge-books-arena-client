@@ -8,7 +8,7 @@ class exports.Channel extends Backbone.Model
   url: ->
     "http://are.na/api/v1/channels/#{@get('slug')}.json?callback=?"
 
-  maybeLoad: (slug, mode) ->
+  maybeLoad: (slug, mode = 'grid', logo = false) ->
     if slug is @get('slug')
       return true
     else
@@ -19,16 +19,16 @@ class exports.Channel extends Backbone.Model
       @.fetch
         success: =>
           @set 'mode', mode
-          @setupBlocks()
+          @setupBlocks(logo)
           @set 'fetching', false
           app.loading().stop()
           return true
         error: (error) =>
           console.log "Error: #{error}"
 
-  setupBlocks: ->
+  setupBlocks: (logo)->
     @contents = new Blocks()
     @contents.channel = this
     @contents.add(@get('blocks'))
     @contents.add(@get('channels'))
-    @logo = @contents.shift() if @has('mode')
+    @logo = @contents.shift() if logo

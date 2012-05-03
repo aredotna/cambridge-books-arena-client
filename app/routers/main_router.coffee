@@ -15,18 +15,19 @@ class exports.MainRouter extends Backbone.Router
     @channel = new Channel()
     @menu = new Channel()
 
-    $.when(@menu.maybeLoad "cambridge-book").then =>
+    $.when(@menu.maybeLoad "cambridge-book", 'grid', false).then =>
+      console.log('menuy', @menu)
       menuView = new MenuView
         model       : @menu
         collection  : @menu.contents.bySelection()
 
       $('#menu').html menuView.render().el
 
-  collection: (slug, mode = 'grid') ->
+  collection: (slug, mode = 'list') ->
     window.scroll(0,0)
     
     if slug?
-      $.when(@channel.maybeLoad slug, mode).then =>
+      $.when(@channel.maybeLoad slug, mode, true).then =>
         @collectionView = new CollectionView
           logo        : @channel.logo
           model       : @channel
@@ -39,7 +40,8 @@ class exports.MainRouter extends Backbone.Router
   single: (slug, id) ->
     window.scroll(0,0)
 
-    $.when(@channel.maybeLoad slug).then =>
+    $.when(@channel.maybeLoad slug, 'list', true).then =>
+
       @singleView = new SingleView
         logo        : @channel.logo
         model       : @channel.contents.get id

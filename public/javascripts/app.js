@@ -305,8 +305,10 @@
       return "http://are.na/api/v1/channels/" + (this.get('slug')) + ".json?callback=?";
     };
 
-    Channel.prototype.maybeLoad = function(slug, mode) {
+    Channel.prototype.maybeLoad = function(slug, mode, logo) {
       var _this = this;
+      if (mode == null) mode = 'grid';
+      if (logo == null) logo = false;
       if (slug === this.get('slug')) {
         return true;
       } else {
@@ -317,7 +319,7 @@
         return this.fetch({
           success: function() {
             _this.set('mode', mode);
-            _this.setupBlocks();
+            _this.setupBlocks(logo);
             _this.set('fetching', false);
             app.loading().stop();
             return true;
@@ -329,12 +331,12 @@
       }
     };
 
-    Channel.prototype.setupBlocks = function() {
+    Channel.prototype.setupBlocks = function(logo) {
       this.contents = new Blocks();
       this.contents.channel = this;
       this.contents.add(this.get('blocks'));
       this.contents.add(this.get('channels'));
-      if (this.has('mode')) return this.logo = this.contents.shift();
+      if (logo) return this.logo = this.contents.shift();
     };
 
     return Channel;
@@ -381,8 +383,9 @@
       var _this = this;
       this.channel = new Channel();
       this.menu = new Channel();
-      return $.when(this.menu.maybeLoad("cambridge-book")).then(function() {
+      return $.when(this.menu.maybeLoad("cambridge-book", 'grid', false)).then(function() {
         var menuView;
+        console.log('menuy', _this.menu);
         menuView = new MenuView({
           model: _this.menu,
           collection: _this.menu.contents.bySelection()
@@ -393,10 +396,10 @@
 
     MainRouter.prototype.collection = function(slug, mode) {
       var _this = this;
-      if (mode == null) mode = 'grid';
+      if (mode == null) mode = 'list';
       window.scroll(0, 0);
       if (slug != null) {
-        return $.when(this.channel.maybeLoad(slug, mode)).then(function() {
+        return $.when(this.channel.maybeLoad(slug, mode, true)).then(function() {
           _this.collectionView = new CollectionView({
             logo: _this.channel.logo,
             model: _this.channel,
@@ -411,7 +414,7 @@
     MainRouter.prototype.single = function(slug, id) {
       var _this = this;
       window.scroll(0, 0);
-      return $.when(this.channel.maybeLoad(slug)).then(function() {
+      return $.when(this.channel.maybeLoad(slug, 'list', true)).then(function() {
         _this.singleView = new SingleView({
           logo: _this.channel.logo,
           model: _this.channel.contents.get(id),
@@ -522,6 +525,7 @@
     };
 
     CollectionView.prototype.render = function() {
+      console.log(this.options);
       this.$el.html(this.logo({
         logo: this.options.logo.toJSON(),
         channel: this.model.toJSON()
@@ -847,6 +851,7 @@
   }
   (function() {
     (function() {
+      var connection, _i, _len, _ref;
     
       if (this.prev || this.next) {
         __out.push('\n  <nav class="pagination">\n    ');
@@ -925,7 +930,11 @@
           __out.push(__sanitize(this.block.image_display));
           __out.push('" alt="');
           __out.push(__sanitize(this.block.title));
-          __out.push('" />\n      </a>\n    ');
+          __out.push('" />\n      </a>\n      <a href="');
+          __out.push(__sanitize(this.block.link_url));
+          __out.push('" class="external url" target="_blank">');
+          __out.push(__sanitize(this.block.link_url));
+          __out.push('</a>\n    ');
         } else {
           __out.push('\n      <p>\n        <a href="');
           __out.push(__sanitize(this.block.link_url));
@@ -948,13 +957,33 @@
     
       __out.push('\n\n  <!-- UNIVERSAL OUTPUT: -->\n\n    ');
     
-      if (!(this.block.block_type === 'Text' || !this.block.content)) {
+      if (!(this.block.block_type === 'Text' || !this.block.description)) {
         __out.push('\n      <div class="description">\n        <div class="content">\n          ');
-        __out.push(this.block.content);
+        __out.push(this.block.description);
         __out.push('\n        </div>\n      </div>\n    ');
       }
     
-      __out.push('\n\n  </div>\n  \n</div><!-- #block -->');
+      __out.push('\n\n  <!-- Connections -->\n    ');
+    
+      if (this.block.connections.length > 1) {
+        __out.push('\n      <ul>\n      ');
+        _ref = this.block.connections;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          connection = _ref[_i];
+          __out.push('\n\n        ');
+          if (connection.channel_id !== this.channel.id && connection.channel.published !== false) {
+            __out.push('\n          <li><a href="/#/');
+            __out.push(__sanitize(connection.channel.slug));
+            __out.push('">');
+            __out.push(__sanitize(connection.connection_title));
+            __out.push('</a></li>\n        ');
+          }
+          __out.push('\n\n      ');
+        }
+        __out.push('\n      <ul>\n    ');
+      }
+    
+      __out.push(' \n\n\n\n  </div>\n  \n</div><!-- #block -->');
     
     }).call(this);
     
