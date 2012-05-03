@@ -1029,15 +1029,17 @@
   (function() {
     (function() {
     
-      __out.push('<div id="info" style="background: transparent url(\'');
+      if (this.logo.image_thumb) {
+        __out.push('\n  <div id="info" style="background: transparent url(\'');
+        __out.push(__sanitize(this.logo.image_thumb));
+        __out.push('\') no-repeat center center;">\n  </div>\n');
+      } else {
+        __out.push('\n  <div id="info">\n    <h1> ');
+        __out.push(__sanitize(this.logo.content));
+        __out.push(' </h1>\n  </div>\n');
+      }
     
-      __out.push(__sanitize(this.logo.image_thumb));
-    
-      __out.push('\') no-repeat center center;">\n  <!-- <h1><a class="arena-mark" href="http://are.na/#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('" target="_blank"></a></h1> -->\n</div>\n\n');
+      __out.push('\n\n');
     
       if ((this.logo.description != null) && this.logo.description !== "") {
         __out.push('\n  <div id="channel-info" class="hide">\n    <div class="description">\n      ');

@@ -1,6 +1,11 @@
-<div id="info" style="background: transparent url('<%= @logo.image_thumb %>') no-repeat center center;">
-  <!-- <h1><a class="arena-mark" href="http://are.na/#/<%= @channel.slug %>" target="_blank"></a></h1> -->
-</div>
+<% if @logo.image_thumb : %>
+  <div id="info" style="background: transparent url('<%= @logo.image_thumb %>') no-repeat center center;">
+  </div>
+<% else: %>
+  <div id="info">
+    <h1> <%= @logo.content %> </h1>
+  </div>
+<% end %>
 
 <% if @logo.description? and @logo.description isnt "": %>
   <div id="channel-info" class="hide">
