@@ -97,7 +97,6 @@
 
     MenuView.prototype.render = function() {
       this.logo = this.collection.shift();
-      console.log('collection', this.collection, 'logo', this.logo);
       this.$el.html(this.template({
         channel: this.model.toJSON(),
         logo: this.logo.toJSON(),
@@ -124,8 +123,7 @@
     function BrunchApplication() {
       var _this = this;
       $(function() {
-        _this.initialize(_this);
-        return Backbone.history.start();
+        return _this.initialize(_this);
       });
     }
 
@@ -171,6 +169,8 @@
     }
 
     Blocks.prototype.model = Block;
+
+    Blocks.prototype.initialize = function() {};
 
     Blocks.prototype.comparator = function(model) {
       if (!model.isNew()) return model.channelConnection().position;
@@ -218,6 +218,22 @@
       i = this.at(this.indexOf(model));
       if (undefined === i || i < 1) return false;
       return this.at(this.indexOf(model) - 1);
+    };
+
+    Blocks.prototype.cleanConnections = function() {
+      var menu_channels;
+      menu_channels = app.menu.contents.where({
+        type: 'Channel'
+      }).map(function(model) {
+        return model.id;
+      });
+      return this.each(function(model) {
+        var connections;
+        connections = _.filter(model.get('connections'), function(connection) {
+          return _.include(menu_channels, connection.channel.id);
+        });
+        return model.set('connections', connections);
+      });
     };
 
     return Blocks;
@@ -311,8 +327,6 @@
       Channel.__super__.constructor.apply(this, arguments);
     }
 
-    Channel.prototype.initialize = function() {};
-
     Channel.prototype.url = function() {
       return "http://are.na/api/v1/channels/" + (this.get('slug')) + ".json?callback=?";
     };
@@ -348,6 +362,7 @@
       this.contents.channel = this;
       this.contents.add(this.get('blocks'));
       this.contents.add(this.get('channels'));
+      if (logo) this.contents.cleanConnections();
       if (logo) return this.logo = this.contents.shift();
     };
 
@@ -392,18 +407,7 @@
     };
 
     MainRouter.prototype.initialize = function() {
-      var _this = this;
-      this.channel = new Channel();
-      this.menu = new Channel();
-      return $.when(this.menu.maybeLoad("cambridge-book", 'grid', false)).then(function() {
-        var menuView;
-        console.log('menuy', _this.menu);
-        menuView = new MenuView({
-          model: _this.menu,
-          collection: _this.menu.contents.bySelection()
-        });
-        return $('#menu').html(menuView.render().el);
-      });
+      return this.channel = new Channel();
     };
 
     MainRouter.prototype.collection = function(slug, mode) {
@@ -537,7 +541,6 @@
     };
 
     CollectionView.prototype.render = function() {
-      console.log(this.options);
       this.$el.html(this.logo({
         logo: this.options.logo.toJSON(),
         channel: this.model.toJSON()
@@ -561,13 +564,17 @@
 (this.require.define({
   "initialize": function(exports, require, module) {
     (function() {
-  var BrunchApplication, MainRouter,
+  var BrunchApplication, Channel, MainRouter, MenuView,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
   BrunchApplication = require('helpers').BrunchApplication;
 
   MainRouter = require('routers/main_router').MainRouter;
+
+  Channel = require('models/channel').Channel;
+
+  MenuView = require('views/menu_view').MenuView;
 
   exports.Application = (function(_super) {
 
@@ -578,8 +585,19 @@
     }
 
     Application.prototype.initialize = function() {
+      var _this = this;
       this.loading().start();
-      return this.router = new MainRouter;
+      this.menu = new Channel();
+      return $.when(this.menu.maybeLoad("cambridge-book", 'grid', false)).then(function() {
+        var menuView;
+        menuView = new MenuView({
+          model: _this.menu,
+          collection: _this.menu.contents.bySelection()
+        });
+        $('#menu').html(menuView.render().el);
+        _this.router = new MainRouter;
+        return Backbone.history.start();
+      });
     };
 
     return Application;
