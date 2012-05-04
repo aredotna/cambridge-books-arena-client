@@ -48,7 +48,7 @@
     };
   }
 }).call(this);(this.require.define({
-  "views/menu_view": function(exports, require, module) {
+  "views/collection_view": function(exports, require, module) {
     (function() {
   var BlockView,
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
@@ -57,37 +57,44 @@
 
   BlockView = require('views/block_view').BlockView;
 
-  exports.MenuView = (function(_super) {
+  exports.CollectionView = (function(_super) {
 
-    __extends(MenuView, _super);
+    __extends(CollectionView, _super);
 
-    function MenuView() {
+    function CollectionView() {
       this.addOne = __bind(this.addOne, this);
-      MenuView.__super__.constructor.apply(this, arguments);
+      CollectionView.__super__.constructor.apply(this, arguments);
     }
 
-    MenuView.prototype.id = 'collection';
+    CollectionView.prototype.id = 'collection';
 
-    MenuView.prototype.initialize = function() {
-      return this.template = require("./templates/collection/menu");
+    CollectionView.prototype.initialize = function() {
+      document.title = "Cambridge Book / " + (this.model.get('title'));
+      this.logo = require("./templates/logo");
+      return this.template = require("./templates/collection/" + this.options.mode);
     };
 
-    MenuView.prototype.events = {
-      'click .logo': 'toggleMenu'
+    CollectionView.prototype.events = {
+      'click .toggle': 'toggleInfo'
     };
 
-    MenuView.prototype.toggleMenu = function() {
-      return this.$('#menu-contents').toggleClass('hide');
+    CollectionView.prototype.randomXToY = function(minVal, maxVal, floatVal) {
+      return minVal + (Math.random() * (maxVal - minVal));
     };
 
-    MenuView.prototype.addAll = function() {
+    CollectionView.prototype.toggleInfo = function(e) {
+      e.preventDefault();
+      return this.$('#channel-info').toggleClass('hide');
+    };
+
+    CollectionView.prototype.addAll = function() {
       return this.collection.each(this.addOne);
     };
 
-    MenuView.prototype.addOne = function(block) {
+    CollectionView.prototype.addOne = function(block) {
       var view;
       view = new BlockView({
-        mode: 'list',
+        mode: this.options.mode,
         model: block,
         collection: this.model.blocks,
         channel: this.model
@@ -95,18 +102,20 @@
       return this.$('#blocks').append(view.render().el);
     };
 
-    MenuView.prototype.render = function() {
-      this.logo = this.collection.shift();
-      this.$el.html(this.template({
+    CollectionView.prototype.render = function() {
+      this.$el.html(this.logo({
+        logo: this.options.logo.toJSON(),
+        channel: this.model.toJSON()
+      }));
+      this.$el.append(this.template({
         channel: this.model.toJSON(),
-        logo: this.logo.toJSON(),
         blocks: this.collection.toJSON()
       }));
       this.addAll();
       return this;
     };
 
-    return MenuView;
+    return CollectionView;
 
   })(Backbone.View);
 
@@ -445,6 +454,73 @@
   }
 }));
 (this.require.define({
+  "views/menu_view": function(exports, require, module) {
+    (function() {
+  var BlockView,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  BlockView = require('views/block_view').BlockView;
+
+  exports.MenuView = (function(_super) {
+
+    __extends(MenuView, _super);
+
+    function MenuView() {
+      this.addOne = __bind(this.addOne, this);
+      MenuView.__super__.constructor.apply(this, arguments);
+    }
+
+    MenuView.prototype.id = 'collection';
+
+    MenuView.prototype.initialize = function() {
+      return this.template = require("./templates/collection/menu");
+    };
+
+    MenuView.prototype.events = {
+      'click .logo': 'toggleMenu'
+    };
+
+    MenuView.prototype.toggleMenu = function() {
+      return this.$('#menu-contents').toggleClass('hide');
+    };
+
+    MenuView.prototype.addAll = function() {
+      return this.collection.each(this.addOne);
+    };
+
+    MenuView.prototype.addOne = function(block) {
+      var view;
+      view = new BlockView({
+        mode: 'list',
+        model: block,
+        collection: this.model.blocks,
+        channel: this.model
+      });
+      return this.$('#blocks').append(view.render().el);
+    };
+
+    MenuView.prototype.render = function() {
+      this.logo = this.collection.shift();
+      this.$el.html(this.template({
+        channel: this.model.toJSON(),
+        logo: this.logo.toJSON(),
+        blocks: this.collection.toJSON()
+      }));
+      this.addAll();
+      return this;
+    };
+
+    return MenuView;
+
+  })(Backbone.View);
+
+}).call(this);
+
+  }
+}));
+(this.require.define({
   "views/block_view": function(exports, require, module) {
     (function() {
   var __hasProp = Object.prototype.hasOwnProperty,
@@ -474,82 +550,6 @@
     };
 
     return BlockView;
-
-  })(Backbone.View);
-
-}).call(this);
-
-  }
-}));
-(this.require.define({
-  "views/collection_view": function(exports, require, module) {
-    (function() {
-  var BlockView,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
-
-  BlockView = require('views/block_view').BlockView;
-
-  exports.CollectionView = (function(_super) {
-
-    __extends(CollectionView, _super);
-
-    function CollectionView() {
-      this.addOne = __bind(this.addOne, this);
-      CollectionView.__super__.constructor.apply(this, arguments);
-    }
-
-    CollectionView.prototype.id = 'collection';
-
-    CollectionView.prototype.initialize = function() {
-      document.title = "Cambridge Book / " + (this.model.get('title'));
-      this.logo = require("./templates/logo");
-      return this.template = require("./templates/collection/" + this.options.mode);
-    };
-
-    CollectionView.prototype.events = {
-      'click .toggle': 'toggleInfo'
-    };
-
-    CollectionView.prototype.randomXToY = function(minVal, maxVal, floatVal) {
-      return minVal + (Math.random() * (maxVal - minVal));
-    };
-
-    CollectionView.prototype.toggleInfo = function(e) {
-      e.preventDefault();
-      return this.$('#channel-info').toggleClass('hide');
-    };
-
-    CollectionView.prototype.addAll = function() {
-      return this.collection.each(this.addOne);
-    };
-
-    CollectionView.prototype.addOne = function(block) {
-      var view;
-      view = new BlockView({
-        mode: this.options.mode,
-        model: block,
-        collection: this.model.blocks,
-        channel: this.model
-      });
-      return this.$('#blocks').append(view.render().el);
-    };
-
-    CollectionView.prototype.render = function() {
-      this.$el.html(this.logo({
-        logo: this.options.logo.toJSON(),
-        channel: this.model.toJSON()
-      }));
-      this.$el.append(this.template({
-        channel: this.model.toJSON(),
-        blocks: this.collection.toJSON()
-      }));
-      this.addAll();
-      return this;
-    };
-
-    return CollectionView;
 
   })(Backbone.View);
 
@@ -654,6 +654,90 @@
   }
 }));
 (this.require.define({
+  "views/templates/logo": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      if (this.logo.image_thumb) {
+        __out.push('\n  <div id="info" style="background: transparent url(\'');
+        __out.push(__sanitize(this.logo.image_thumb));
+        __out.push('\') no-repeat center center;">\n  </div>\n');
+      } else {
+        __out.push('\n  <div id="info">\n    <h1>\n      <span>');
+        __out.push(__sanitize(this.logo.content));
+        __out.push('</span>\n    </h1>\n  </div>\n');
+      }
+    
+      __out.push('\n\n');
+    
+      if ((this.logo.description != null) && this.logo.description !== "") {
+        __out.push('\n  <div id="channel-info" class="hide">\n    <div class="description">\n      ');
+        __out.push(this.logo.description);
+        __out.push('\n    </div>\n  </div>\n');
+      }
+    
+      __out.push('\n\n<nav id="mode">\n  <a href="#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('/mode:grid">Grid</a>\n  <a href="#/');
+    
+      __out.push(__sanitize(this.channel.slug));
+    
+      __out.push('/mode:list">List</a>\n  ');
+    
+      if ((this.logo.description != null) && this.logo.description !== "") {
+        __out.push('\n    <a href="#" class="toggle">Info</a>\n  ');
+      }
+    
+      __out.push('\n</nav>');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
   "views/templates/collection/grid": function(exports, require, module) {
     module.exports = function (__obj) {
   if (!__obj) __obj = {};
@@ -748,6 +832,113 @@
     (function() {
     
       __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/collection/menu": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+      var block, _i, _len, _ref;
+    
+      __out.push('<div class="logo" style="background: transparent url(\'');
+    
+      __out.push(__sanitize(this.logo.image_display));
+    
+      __out.push('\') no-repeat left center;">\n</div>\n\n<div id="menu-contents" class="hide">\n  ');
+    
+      _ref = this.blocks;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        block = _ref[_i];
+        __out.push('\n    <div class="block ');
+        __out.push(block.block_type);
+        __out.push('">\n      ');
+        if (block.block_type === 'Image') {
+          __out.push('\n        <!-- IMAGE -->\n        <img src="');
+          __out.push(__sanitize(block.image_display));
+          __out.push('" alt="');
+          __out.push(__sanitize(block.title));
+          __out.push('" />\n      ');
+        } else if (block.block_type === 'Link') {
+          __out.push('\n        <!-- LINK -->\n        ');
+          if (block.image_display) {
+            __out.push('\n          <a href="');
+            __out.push(__sanitize(block.link_url));
+            __out.push('" class="external" target="_blank">\n            <img src="');
+            __out.push(__sanitize(block.image_display));
+            __out.push('" alt="');
+            __out.push(__sanitize(block.title));
+            __out.push('" />\n          </a>\n        ');
+          } else {
+            __out.push('\n          <p>\n            <a href="');
+            __out.push(__sanitize(block.link_url));
+            __out.push('" class="external url" target="_blank">');
+            __out.push(__sanitize(block.link_url));
+            __out.push('</a>\n          </p>\n        ');
+          }
+          __out.push('\n      ');
+        } else if (block.block_type === 'Text') {
+          __out.push('\n        <!-- TEXT -->\n        <div class="content">\n          ');
+          __out.push(block.content);
+          __out.push('\n        </div>\n      ');
+        } else if (block.block_type === 'Channel') {
+          __out.push('\n        <!-- TEXT -->\n          ');
+          if (block.published === true) {
+            __out.push('\n            <a href="#/');
+            __out.push(__sanitize(block.slug));
+            __out.push('">');
+            __out.push(block.title);
+            __out.push('</a>\n          ');
+          }
+          __out.push('\n      ');
+        }
+        __out.push('\n    </div>\n  ');
+      }
+    
+      __out.push('\n</div>\n');
     
     }).call(this);
     
@@ -979,197 +1170,6 @@
       }
     
       __out.push('\n  </div>\n</aside>\n');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
-  "views/templates/logo": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-    
-      if (this.logo.image_thumb) {
-        __out.push('\n  <div id="info" style="background: transparent url(\'');
-        __out.push(__sanitize(this.logo.image_thumb));
-        __out.push('\') no-repeat center center;">\n  </div>\n');
-      } else {
-        __out.push('\n  <div id="info">\n    <h1>\n      <span>');
-        __out.push(__sanitize(this.logo.content));
-        __out.push('</span>\n    </h1>\n  </div>\n');
-      }
-    
-      __out.push('\n\n');
-    
-      if ((this.logo.description != null) && this.logo.description !== "") {
-        __out.push('\n  <div id="channel-info" class="hide">\n    <div class="description">\n      ');
-        __out.push(this.logo.description);
-        __out.push('\n    </div>\n  </div>\n');
-      }
-    
-      __out.push('\n\n<nav id="mode">\n  <a href="#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('/mode:grid">Grid</a>\n  <a href="#/');
-    
-      __out.push(__sanitize(this.channel.slug));
-    
-      __out.push('/mode:list">List</a>\n  ');
-    
-      if ((this.logo.description != null) && this.logo.description !== "") {
-        __out.push('\n    <a href="#" class="toggle">Info</a>\n  ');
-      }
-    
-      __out.push('\n</nav>');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
-  "views/templates/collection/menu": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-      var block, _i, _len, _ref;
-    
-      __out.push('<div class="logo" style="background: transparent url(\'');
-    
-      __out.push(__sanitize(this.logo.image_display));
-    
-      __out.push('\') no-repeat left center;">\n</div>\n\n<div id="menu-contents" class="hide">\n  ');
-    
-      _ref = this.blocks;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        block = _ref[_i];
-        __out.push('\n    <div class="block ');
-        __out.push(block.block_type);
-        __out.push('">\n      ');
-        if (block.block_type === 'Image') {
-          __out.push('\n        <!-- IMAGE -->\n        <img src="');
-          __out.push(__sanitize(block.image_display));
-          __out.push('" alt="');
-          __out.push(__sanitize(block.title));
-          __out.push('" />\n      ');
-        } else if (block.block_type === 'Link') {
-          __out.push('\n        <!-- LINK -->\n        ');
-          if (block.image_display) {
-            __out.push('\n          <a href="');
-            __out.push(__sanitize(block.link_url));
-            __out.push('" class="external" target="_blank">\n            <img src="');
-            __out.push(__sanitize(block.image_display));
-            __out.push('" alt="');
-            __out.push(__sanitize(block.title));
-            __out.push('" />\n          </a>\n        ');
-          } else {
-            __out.push('\n          <p>\n            <a href="');
-            __out.push(__sanitize(block.link_url));
-            __out.push('" class="external url" target="_blank">');
-            __out.push(__sanitize(block.link_url));
-            __out.push('</a>\n          </p>\n        ');
-          }
-          __out.push('\n      ');
-        } else if (block.block_type === 'Text') {
-          __out.push('\n        <!-- TEXT -->\n        <div class="content">\n          ');
-          __out.push(block.content);
-          __out.push('\n        </div>\n      ');
-        } else if (block.block_type === 'Channel') {
-          __out.push('\n        <!-- TEXT -->\n          ');
-          if (block.published === true) {
-            __out.push('\n            <a href="#/');
-            __out.push(__sanitize(block.slug));
-            __out.push('">');
-            __out.push(block.title);
-            __out.push('</a>\n          ');
-          }
-          __out.push('\n      ');
-        }
-        __out.push('\n    </div>\n  ');
-      }
-    
-      __out.push('\n</div>\n');
     
     }).call(this);
     
