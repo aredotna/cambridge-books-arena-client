@@ -7,6 +7,7 @@
 class exports.MainRouter extends Backbone.Router
   routes:
     ''                 : 'collection'
+    'show::id'         : 'menuSingle'
     ':slug'            : 'collection'
     ':slug/mode::mode' : 'collection'
     ':slug/show::id'   : 'single'
@@ -18,7 +19,6 @@ class exports.MainRouter extends Backbone.Router
     window.scroll(0,0)
     
     app.mode = mode if app.mode isnt mode and mode?
-    
     if slug?
       $.when(@channel.maybeLoad slug, true).then =>
         @collectionView = new CollectionView
@@ -35,6 +35,8 @@ class exports.MainRouter extends Backbone.Router
     window.scroll(0,0)
 
     $.when(@channel.maybeLoad slug, true).then =>
+      console.log('here', @channel)
+      console.log('thing', @channel.contents.get id)
 
       @singleView = new SingleView
         logo        : @channel.logo
@@ -45,3 +47,5 @@ class exports.MainRouter extends Backbone.Router
       $('#container')
         .attr('class', 'single')
         .html @singleView.render().el
+
+  menuSingle: (id) -> @single('cambridge-book', id)

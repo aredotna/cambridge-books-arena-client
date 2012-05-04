@@ -181,7 +181,13 @@
     Blocks.prototype.initialize = function() {};
 
     Blocks.prototype.comparator = function(model) {
-      if (!model.isNew()) return model.channelConnection().position;
+      var date;
+      if (model.channelConnection() != null) {
+        return model.channelConnection().position;
+      } else {
+        date = new Date(this.get('created_at'));
+        return -date.valueOf();
+      }
     };
 
     Blocks.prototype.filtered = function(criteria) {
@@ -209,7 +215,7 @@
     Blocks.prototype.byNewest = function() {
       return this.sortedBy(function(block) {
         var date;
-        date = new Date(block.channelConnection().created_at);
+        date = block.channelConnection() != null ? new Date(block.channelConnection().created_at) : block.get('created_at');
         return -date.valueOf();
       });
     };
@@ -405,6 +411,7 @@
 
     MainRouter.prototype.routes = {
       '': 'collection',
+      'show::id': 'menuSingle',
       ':slug': 'collection',
       ':slug/mode::mode': 'collection',
       ':slug/show::id': 'single'
@@ -435,6 +442,8 @@
       var _this = this;
       window.scroll(0, 0);
       return $.when(this.channel.maybeLoad(slug, true)).then(function() {
+        console.log('here', _this.channel);
+        console.log('thing', _this.channel.contents.get(id));
         _this.singleView = new SingleView({
           logo: _this.channel.logo,
           model: _this.channel.contents.get(id),
@@ -443,6 +452,10 @@
         });
         return $('#container').attr('class', 'single').html(_this.singleView.render().el);
       });
+    };
+
+    MainRouter.prototype.menuSingle = function(id) {
+      return this.single('cambridge-book', id);
     };
 
     return MainRouter;
@@ -1071,15 +1084,13 @@
     (function() {
       var connection, _i, _len, _ref;
     
-      __out.push('<article>\n  ');
-    
       if (this.prev || this.next) {
-        __out.push('\n    <nav class="pagination">\n      <a href="#/');
+        __out.push('\n  <nav class="pagination">\n    <a href="#/');
         __out.push(__sanitize(this.channel.slug));
-        __out.push('" class="up">Back</a>\n    </nav>\n  ');
+        __out.push('" class="up">Back</a>\n  </nav>\n');
       }
     
-      __out.push('\n\n  ');
+      __out.push('\n\n<article>\n\n  ');
     
       if (this.block.block_type === 'Media') {
         __out.push('\n    <!-- MEDIA -->\n    <div class="embed">\n      ');
@@ -1136,9 +1147,13 @@
       __out.push('\n</article>\n\n<aside>\n  <!-- METADATA -->\n  ');
     
       if (this.block.title != null) {
-        __out.push('\n    <h4>');
+        __out.push('\n    <h4><a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('/show:');
+        __out.push(__sanitize(this.block.id));
+        __out.push('">');
         __out.push(__sanitize(this.block.title));
-        __out.push('</h4>\n  ');
+        __out.push('</a></h4>\n  ');
       }
     
       __out.push('\n  ');
@@ -1149,10 +1164,20 @@
         __out.push('\n    </div>\n  ');
       }
     
+      __out.push('\n\n  ');
+    
+      if (this.block.block_type === 'Link') {
+        __out.push('\n    <p>\n      <a href="');
+        __out.push(__sanitize(this.block.link_url));
+        __out.push('" class="external url" target="_blank">');
+        __out.push(__sanitize(this.block.link_url));
+        __out.push('</a>\n    </p>\n  ');
+      }
+    
       __out.push('\n\n  <!-- CONNECTIONS -->\n  <div class="connections">\n    ');
     
       if (this.block.connections.length > 1) {
-        __out.push('\n      <h4>See also</h4>\n      <ul>\n      ');
+        __out.push('\n      <h4>Also used in</h4>\n      <ul>\n      ');
         _ref = this.block.connections;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           connection = _ref[_i];

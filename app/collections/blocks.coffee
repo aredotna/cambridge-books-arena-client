@@ -6,8 +6,11 @@ class exports.Blocks extends Backbone.Collection
   initialize: ->
   
   comparator: (model) -> 
-    if not model.isNew() 
+    if model.channelConnection()?
       model.channelConnection().position
+    else
+      date = new Date(@get('created_at'))
+      - date.valueOf()
 
   filtered: (criteria) ->
     new exports.Blocks(@select(criteria))
@@ -27,7 +30,7 @@ class exports.Blocks extends Backbone.Collection
 
   byNewest: ->
     @sortedBy (block) ->
-      date = new Date(block.channelConnection().created_at)
+      date = if block.channelConnection()? then new Date(block.channelConnection().created_at) else block.get('created_at')
       - date.valueOf()
 
   next: (model) ->

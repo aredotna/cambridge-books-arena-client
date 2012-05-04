@@ -1,9 +1,10 @@
+<% if @prev or @next: %>
+  <nav class="pagination">
+    <a href="#/<%= @channel.slug %>" class="up">Back</a>
+  </nav>
+<% end %>
+
 <article>
-  <% if @prev or @next: %>
-    <nav class="pagination">
-      <a href="#/<%= @channel.slug %>" class="up">Back</a>
-    </nav>
-  <% end %>
 
   <% if @block.block_type is 'Media': %>
     <!-- MEDIA -->
@@ -46,7 +47,7 @@
 <aside>
   <!-- METADATA -->
   <% if @block.title?: %>
-    <h4><%= @block.title %></h4>
+    <h4><a href="#/<%= @channel.slug %>/show:<%= @block.id %>"><%= @block.title %></a></h4>
   <% end %>
   <% unless @block.block_type is 'Text' or !@block.description: %>
     <div class="description">
@@ -54,10 +55,16 @@
     </div>
   <% end %>
 
+  <% if @block.block_type is 'Link' : %>
+    <p>
+      <a href="<%= @block.link_url %>" class="external url" target="_blank"><%= @block.link_url %></a>
+    </p>
+  <% end %>
+
   <!-- CONNECTIONS -->
   <div class="connections">
     <% if @block.connections.length > 1 : %>
-      <h4>See also</h4>
+      <h4>Also used in</h4>
       <ul>
       <% for connection in @block.connections: %>
         <% if connection.channel_id isnt @channel.id and connection.channel.published isnt false : %>
