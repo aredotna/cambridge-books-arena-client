@@ -1,8 +1,8 @@
 <div class="thumb">
-  <% if @block.image_thumb: %>
+  <% if @block.image.thumb: %>
     <div class="image">
       <a href="#/<%= @channel.slug %>/show:<%= @block.id %>">
-        <img src="<%= @block.image_thumb %>" alt="<%= @block.title %>" />
+        <img src="<%= @block.image.thumb %>" alt="<%= @block.title %>" />
       </a>
     </div>
   <% else if @block.title: %>

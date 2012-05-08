@@ -1,4 +1,5 @@
-<div class="logo" style="background: transparent url('<%= @logo.image_display %>') no-repeat left center;">
+
+<div class="logo" style="background: transparent url('<%= @logo.image.display %>') no-repeat left center;">
 </div>
 
 <div id="menu-contents" class="hide">
@@ -6,12 +7,12 @@
     <div class="block <%- block.block_type %>">
       <% if block.block_type is 'Image': %>
         <!-- IMAGE -->
-        <img src="<%= block.image_display %>" alt="<%= block.title %>" />
+        <img src="<%= block.image.display %>" alt="<%= block.title %>" />
       <% else if block.block_type is 'Link': %>
         <!-- LINK -->
-        <% if block.image_display: %>
+        <% if block.image.display: %>
           <a href="<%= block.link_url %>" class="external" target="_blank">
-            <img src="<%= block.image_display %>" alt="<%= block.title %>" />
+            <img src="<%= block.image.display %>" alt="<%= block.title %>" />
           </a>
         <% else: %>
           <p>

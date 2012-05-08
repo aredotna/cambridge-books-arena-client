@@ -1,5 +1,8 @@
-<% if @logo.image_thumb : %>
-  <div id="info" style="background: transparent url('<%= @logo.image_thumb %>') no-repeat center center;">
+<% console.log('block', @logo) %>
+
+
+<% if @logo.image?.thumb : %>
+  <div id="info" style="background: transparent url('<%= @logo.image.thumb %>') no-repeat center center;">
   </div>
 <% else: %>
   <div id="info">
