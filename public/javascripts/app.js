@@ -48,46 +48,67 @@
     };
   }
 }).call(this);(this.require.define({
-  "views/single_view": function(exports, require, module) {
+  "views/menu_view": function(exports, require, module) {
     (function() {
-  var BlockView, template,
+  var BlockView,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
-  template = require('./templates/single/list');
-
   BlockView = require('views/block_view').BlockView;
 
-  exports.SingleView = (function(_super) {
+  exports.MenuView = (function(_super) {
 
-    __extends(SingleView, _super);
+    __extends(MenuView, _super);
 
-    function SingleView() {
-      SingleView.__super__.constructor.apply(this, arguments);
+    function MenuView() {
+      this.addOne = __bind(this.addOne, this);
+      MenuView.__super__.constructor.apply(this, arguments);
     }
 
-    SingleView.prototype.id = 'single';
+    MenuView.prototype.id = 'collection';
 
-    SingleView.prototype.className = 'block';
-
-    SingleView.prototype.initialize = function() {
-      return document.title = this.model.get('title') ? "" + (this.options.channel.get('title')) + ": " + (this.model.get('title')) : this.options.channel.get('title');
+    MenuView.prototype.initialize = function() {
+      return this.template = require("./templates/collection/menu");
     };
 
-    SingleView.prototype.render = function(id) {
-      this.$el.html(template({
-        channel: this.options.channel.toJSON(),
-        block: this.model.toJSON(),
-        blocks: this.collection.toJSON(),
-        next: this.collection.next(this.model),
-        prev: this.collection.prev(this.model)
+    MenuView.prototype.events = {
+      'click .logo': 'toggleMenu'
+    };
+
+    MenuView.prototype.toggleMenu = function() {
+      return this.$('#menu-contents').toggleClass('hide');
+    };
+
+    MenuView.prototype.addAll = function() {
+      return this.collection.each(this.addOne);
+    };
+
+    MenuView.prototype.addOne = function(block) {
+      var view;
+      view = new BlockView({
+        mode: 'list',
+        model: block,
+        collection: this.model.blocks,
+        channel: this.model
+      });
+      return this.$('#blocks').append(view.render().el);
+    };
+
+    MenuView.prototype.render = function() {
+      this.logo = this.collection.shift();
+      this.$el.html(this.template({
+        channel: this.model.toJSON(),
+        logo: this.logo.toJSON(),
+        blocks: this.collection.toJSON()
       }));
+      this.addAll();
       return this;
     };
 
-    return SingleView;
+    return MenuView;
 
-  })(BlockView);
+  })(Backbone.View);
 
 }).call(this);
 
@@ -355,6 +376,93 @@
   }
 }));
 (this.require.define({
+  "routers/main_router": function(exports, require, module) {
+    (function() {
+  var BlockView, Channel, CollectionView, MenuView, SingleView,
+    __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  BlockView = require('views/block_view').BlockView;
+
+  SingleView = require('views/single_view').SingleView;
+
+  MenuView = require('views/menu_view').MenuView;
+
+  CollectionView = require('views/collection_view').CollectionView;
+
+  Channel = require('models/channel').Channel;
+
+  exports.MainRouter = (function(_super) {
+
+    __extends(MainRouter, _super);
+
+    function MainRouter() {
+      MainRouter.__super__.constructor.apply(this, arguments);
+    }
+
+    MainRouter.prototype.routes = {
+      '': 'index',
+      'show::id': 'menuSingle',
+      ':slug': 'collection',
+      ':slug/mode::mode': 'collection',
+      ':slug/show::id': 'single'
+    };
+
+    MainRouter.prototype.initialize = function() {
+      return this.channel = new Channel();
+    };
+
+    MainRouter.prototype.index = function() {
+      console.log('here');
+      return $('#container').html(require('views/templates/front'));
+    };
+
+    MainRouter.prototype.collection = function(slug, mode) {
+      var _this = this;
+      window.scroll(0, 0);
+      if (app.mode !== mode && (mode != null)) app.mode = mode;
+      if (slug != null) {
+        return $.when(this.channel.maybeLoad(slug, true)).then(function() {
+          _this.collectionView = new CollectionView({
+            logo: _this.channel.logo,
+            model: _this.channel,
+            collection: _this.channel.contents.bySelection().byNewest(),
+            mode: app.mode
+          });
+          return $('#container').attr('class', 'collection').html(_this.collectionView.render().el);
+        });
+      }
+    };
+
+    MainRouter.prototype.single = function(slug, id) {
+      var _this = this;
+      window.scroll(0, 0);
+      return $.when(this.channel.maybeLoad(slug, true)).then(function() {
+        console.log('here', _this.channel);
+        console.log('thing', _this.channel.contents.get(id));
+        _this.singleView = new SingleView({
+          logo: _this.channel.logo,
+          model: _this.channel.contents.get(id),
+          collection: _this.channel.contents,
+          channel: _this.channel
+        });
+        return $('#container').attr('class', 'single').html(_this.singleView.render().el);
+      });
+    };
+
+    MainRouter.prototype.menuSingle = function(id) {
+      return this.single('cambridge-book', id);
+    };
+
+    return MainRouter;
+
+  })(Backbone.Router);
+
+}).call(this);
+
+  }
+}));
+(this.require.define({
   "views/block_view": function(exports, require, module) {
     (function() {
   var __hasProp = Object.prototype.hasOwnProperty,
@@ -468,73 +576,6 @@
   }
 }));
 (this.require.define({
-  "views/menu_view": function(exports, require, module) {
-    (function() {
-  var BlockView,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-    __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
-
-  BlockView = require('views/block_view').BlockView;
-
-  exports.MenuView = (function(_super) {
-
-    __extends(MenuView, _super);
-
-    function MenuView() {
-      this.addOne = __bind(this.addOne, this);
-      MenuView.__super__.constructor.apply(this, arguments);
-    }
-
-    MenuView.prototype.id = 'collection';
-
-    MenuView.prototype.initialize = function() {
-      return this.template = require("./templates/collection/menu");
-    };
-
-    MenuView.prototype.events = {
-      'click .logo': 'toggleMenu'
-    };
-
-    MenuView.prototype.toggleMenu = function() {
-      return this.$('#menu-contents').toggleClass('hide');
-    };
-
-    MenuView.prototype.addAll = function() {
-      return this.collection.each(this.addOne);
-    };
-
-    MenuView.prototype.addOne = function(block) {
-      var view;
-      view = new BlockView({
-        mode: 'list',
-        model: block,
-        collection: this.model.blocks,
-        channel: this.model
-      });
-      return this.$('#blocks').append(view.render().el);
-    };
-
-    MenuView.prototype.render = function() {
-      this.logo = this.collection.shift();
-      this.$el.html(this.template({
-        channel: this.model.toJSON(),
-        logo: this.logo.toJSON(),
-        blocks: this.collection.toJSON()
-      }));
-      this.addAll();
-      return this;
-    };
-
-    return MenuView;
-
-  })(Backbone.View);
-
-}).call(this);
-
-  }
-}));
-(this.require.define({
   "initialize": function(exports, require, module) {
     (function() {
   var BrunchApplication, Channel, MainRouter, MenuView,
@@ -585,82 +626,46 @@
   }
 }));
 (this.require.define({
-  "routers/main_router": function(exports, require, module) {
+  "views/single_view": function(exports, require, module) {
     (function() {
-  var BlockView, Channel, CollectionView, MenuView, SingleView,
+  var BlockView, template,
     __hasProp = Object.prototype.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
+  template = require('./templates/single/list');
+
   BlockView = require('views/block_view').BlockView;
 
-  SingleView = require('views/single_view').SingleView;
+  exports.SingleView = (function(_super) {
 
-  MenuView = require('views/menu_view').MenuView;
+    __extends(SingleView, _super);
 
-  CollectionView = require('views/collection_view').CollectionView;
-
-  Channel = require('models/channel').Channel;
-
-  exports.MainRouter = (function(_super) {
-
-    __extends(MainRouter, _super);
-
-    function MainRouter() {
-      MainRouter.__super__.constructor.apply(this, arguments);
+    function SingleView() {
+      SingleView.__super__.constructor.apply(this, arguments);
     }
 
-    MainRouter.prototype.routes = {
-      '': 'collection',
-      'show::id': 'menuSingle',
-      ':slug': 'collection',
-      ':slug/mode::mode': 'collection',
-      ':slug/show::id': 'single'
+    SingleView.prototype.id = 'single';
+
+    SingleView.prototype.className = 'block';
+
+    SingleView.prototype.initialize = function() {
+      return document.title = this.model.get('title') ? "" + (this.options.channel.get('title')) + ": " + (this.model.get('title')) : this.options.channel.get('title');
     };
 
-    MainRouter.prototype.initialize = function() {
-      return this.channel = new Channel();
+    SingleView.prototype.render = function(id) {
+      this.$el.html(template({
+        channel: this.options.channel.toJSON(),
+        block: this.model.toJSON(),
+        blocks: this.collection.toJSON(),
+        next: this.collection.next(this.model),
+        prev: this.collection.prev(this.model)
+      }));
+      return this;
     };
 
-    MainRouter.prototype.collection = function(slug, mode) {
-      var _this = this;
-      window.scroll(0, 0);
-      if (app.mode !== mode && (mode != null)) app.mode = mode;
-      if (slug != null) {
-        return $.when(this.channel.maybeLoad(slug, true)).then(function() {
-          _this.collectionView = new CollectionView({
-            logo: _this.channel.logo,
-            model: _this.channel,
-            collection: _this.channel.contents.bySelection().byNewest(),
-            mode: app.mode
-          });
-          return $('#container').attr('class', 'collection').html(_this.collectionView.render().el);
-        });
-      }
-    };
+    return SingleView;
 
-    MainRouter.prototype.single = function(slug, id) {
-      var _this = this;
-      window.scroll(0, 0);
-      return $.when(this.channel.maybeLoad(slug, true)).then(function() {
-        console.log('here', _this.channel);
-        console.log('thing', _this.channel.contents.get(id));
-        _this.singleView = new SingleView({
-          logo: _this.channel.logo,
-          model: _this.channel.contents.get(id),
-          collection: _this.channel.contents,
-          channel: _this.channel
-        });
-        return $('#container').attr('class', 'single').html(_this.singleView.render().el);
-      });
-    };
-
-    MainRouter.prototype.menuSingle = function(id) {
-      return this.single('cambridge-book', id);
-    };
-
-    return MainRouter;
-
-  })(Backbone.Router);
+  })(BlockView);
 
 }).call(this);
 
@@ -731,7 +736,13 @@
         __out.push('\n    </div>\n  </div>\n');
       }
     
-      __out.push('\n\n<nav id="mode">\n  <a href="#/');
+      __out.push('\n\n<nav id="mode">\n  ');
+    
+      if ((this.logo.description != null) && this.logo.description !== "") {
+        __out.push('\n    <a href="#" class="toggle">Info</a><br>\n  ');
+      }
+    
+      __out.push('\n  <a href="#/');
     
       __out.push(__sanitize(this.channel.slug));
     
@@ -739,13 +750,7 @@
     
       __out.push(__sanitize(this.channel.slug));
     
-      __out.push('/mode:list">List</a>\n  ');
-    
-      if ((this.logo.description != null) && this.logo.description !== "") {
-        __out.push('\n    <a href="#" class="toggle">Info</a>\n  ');
-      }
-    
-      __out.push('\n</nav>');
+      __out.push('/mode:list">List</a>\n  \n</nav>');
     
     }).call(this);
     
@@ -756,7 +761,7 @@
   }
 }));
 (this.require.define({
-  "views/templates/collection/list": function(exports, require, module) {
+  "views/templates/collection/grid": function(exports, require, module) {
     module.exports = function (__obj) {
   if (!__obj) __obj = {};
   var __out = [], __capture = function(callback) {
@@ -797,7 +802,7 @@
   (function() {
     (function() {
     
-      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
+      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="grid"></div>\n');
     
     }).call(this);
     
@@ -915,7 +920,7 @@
   }
 }));
 (this.require.define({
-  "views/templates/collection/grid": function(exports, require, module) {
+  "views/templates/collection/list": function(exports, require, module) {
     module.exports = function (__obj) {
   if (!__obj) __obj = {};
   var __out = [], __capture = function(callback) {
@@ -956,7 +961,7 @@
   (function() {
     (function() {
     
-      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="grid"></div>\n');
+      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
     
     }).call(this);
     
@@ -1200,6 +1205,58 @@
       }
     
       __out.push('\n  </div>\n</aside>\n');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/front": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      __out.push('meow');
     
     }).call(this);
     

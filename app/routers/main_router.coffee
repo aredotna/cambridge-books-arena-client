@@ -6,7 +6,7 @@
 
 class exports.MainRouter extends Backbone.Router
   routes:
-    ''                 : 'collection'
+    ''                 : 'index'
     'show::id'         : 'menuSingle'
     ':slug'            : 'collection'
     ':slug/mode::mode' : 'collection'
@@ -14,6 +14,10 @@ class exports.MainRouter extends Backbone.Router
 
   initialize: ->
     @channel = new Channel()
+
+  index: ->
+    console.log 'here'
+    $('#container').html require 'views/templates/front'
 
   collection: (slug, mode) ->
     window.scroll(0,0)
