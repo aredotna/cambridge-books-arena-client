@@ -1,7 +1,7 @@
 <div class="logo" style="background: transparent url('<%= @logo.image.display %>') no-repeat left top;">
 </div>
 
-<div id="menu-contents" class="show">
+<div id="menu-contents">
   <% for block in @blocks: %>
     <div class="block <%- block.block_type %>">
       <% if block.block_type is 'Image': %>
