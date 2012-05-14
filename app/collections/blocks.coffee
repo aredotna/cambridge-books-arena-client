@@ -47,7 +47,13 @@ class exports.Blocks extends Backbone.Collection
     menu_channels = app.menu.contents.where({type:'Channel'}).map((model)-> model.id)
 
     @each (model)->
-      connections = _.filter model.get('connections'), (connection)-> _.include menu_channels, connection.channel.id
+      connections = _.filter model.get('connections'), (connection)-> 
+
+        included = _.include menu_channels, connection.channel.id
+        published = connection.channel.published
+        
+        return (included and published)
+
       model.set('connections', connections)
 
       

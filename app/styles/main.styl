@@ -2,7 +2,7 @@
 
 // VARIABLES
 // ---------
-base_font_size   = 14px
+base_font_size   = 13px
 base_line_height = 20px
 text_color       = #000
 link_color       = #000
@@ -29,6 +29,7 @@ body
   -webkit-font-smoothing: antialiased
 
   a, a:visited
+    word-wrap: break-word;
     font-family: sans-serif
     color: link_color
     text-decoration: none
@@ -54,6 +55,19 @@ nav
   margin: base_line_height 0
   text-align: left
 
+
+hr
+  color: #f0f0f0
+  background-color: #f0f0f0
+  height: 1px
+
+
+.bigtitle
+  font-size: 18px
+  text-decoration: none
+
+
+
 // STRUCTURE
 // ---------
 #menu
@@ -62,9 +76,9 @@ nav
   bottom: 0
   left: 0
   width: sidebar_width
-  overflow-y: scroll
+  overflow-y: hidden
   overflow-x: hidden
-  background-color: #fff
+  background-color: white
   padding: base_line_height
   font-size: base_font_size - 2
   .Text
@@ -82,49 +96,73 @@ nav
   &.loading
     background: #fff url('../images/loader.gif') center center no-repeat
 
-#info
-  background-color: transparent
+// CHANNEL HEADER
+// ----
+#header
   position: fixed
-  top: 0
-  right: 0
-  left: sidebar_width
-  height: header_height
+  top:0px
+  left:sidebar_width
+  right: 0px
+  overflow-y: hidden
+  overflow-x: hidden
+  background-color: transparent
   pointer-events: none
+  z-index: 9000
+
+ #airpocket
+  width: 50%
+  height: header_height
+  float: left
   line-height: header_height
   text-align: center
-  h1
-    span
-      // background-color: #fff
+  pointer-events: none
+
+#channel-title
+  position: fixed
+  top:0px
+  left:sidebar_width
+  right:0px
+  height: header_height
+  line-height: header_height
+  text-align: center
+  pointer-events: none
 
 #channel-info
+  width: 50%
+  float: left
+  overflow: visible
+  padding: base_line_height*3 base_line_height*5
+  margin-bottom: 300px
+  pointer-events: auto
+  background: rgba(255,255,255,.9)
+  box-shadow: -20px 20px 50px white
+  -webkit-box-shadow: -20px 20px 50px white
+  z-index: 300
+    
+#info-toggle
   position: fixed
-  width: 300px
   top: base_line_height
-  right: 100px + base_line_height
-  height: 220px
-  overflow-y: auto
-  overflow-x: hidden
-  font-family: sans-serif
-  font-size: base_font_size - 2
-  background: rgb(220, 220, 220);
-  z-index: 9999;
-  padding: 15px;
-  p
-    margin-top: 0
-
+  right: 40px
+  text-align: center
+  pointer-events: auto
+  a 
+    text-align: center
+    text-transform: none
+    font-size: base_font_size
+    font-weight: normal
 
 #mode
   position: fixed
-  width: 100px
-  top: base_line_height
+  width: 70px
+  top: header_height + base_line_height
   right: 0
   margin: 0
 
 #mode a, #channel-info a.toggle
     text-transform: uppercase
     font-size: base_font_size - 2
-    color: #000
     display: block
+    text-align: left
 
 
 // GRID
@@ -147,7 +185,6 @@ nav
       box-shadow: 4px 4px 4px 0px #ccc
 
 #blocks.list
-  // padding-right: 240px
 
 #blocks.list .block, #single
   clearfix()
@@ -168,11 +205,50 @@ nav
     h4
       margin-top: 0
 
+
+
+// Hacky Styles for Splash Page
+.whitepaper
+  position: fixed
+  left: 0px
+  top: 0px
+  width: 100%
+  height: 100%
+  z-index: 8777
+  background-color:white
+
+
+.home
+  position: fixed
+  top:base_line_height
+  left:sidebar_width
+  width: 50%
+  z-index: 8888
+
+
 .connections
+  border-top: 1px solid #f0f0f0
+  padding-top: 10px
+  overflow-y: hidden
+  overflow-x: hidden
   ul, li
     list-style: none
-    margin: 0
+    margin-bottom: 5px
     padding: 0
+  h4
+    text-decoration: none
+    line-height: 10px
+    padding-top: 2px
+  a
+    padding: 3px 6px
+    background: rgba(228, 228, 228, 0.9)
+    font-weight: normal
+  a:visited
+    padding: 3px 6px
+  a:hover
+    padding: 3px 6px
+    background-color: white
+
 
 .metadata dl
   dt
