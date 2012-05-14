@@ -1,30 +1,31 @@
-<% console.log('block', @logo) %>
-
-
 <% if @logo.image?.thumb : %>
-  <div id="info" style="background: transparent url('<%= @logo.image.thumb %>') no-repeat center center;">
+  <div id="channel-title" style="background: transparent url('<%= @logo.image.thumb %>') no-repeat center center;">
   </div>
 <% else: %>
-  <div id="info">
-    <h1>
-      <span><%= @logo.content %></span>
-    </h1>
+  <div id="channel-title">
+      <span class="bigtitle"><%= @logo.content %></span>
   </div>
 <% end %>
 
-<% if @logo.description? and @logo.description isnt "": %>
-  <div id="channel-info" class="hide">
-    <div class="description">
-      <%- @logo.description %>
+<div id="header">
+  <div id="airpocket"></div>    
+  <% if @logo.description? and @logo.description isnt "": %>
+    <div id="channel-info" class="hide">
+      <div class="description">
+        <%- @logo.description %>
+      </div>
     </div>
-  </div>
-<% end %>
+  <% end %>
+
+  <% if @logo.description? and @logo.description isnt "": %>
+    <div id="info-toggle"> 
+    <a id="question" href="#" class="toggle">about: <%= @logo.title %></a>
+    </div>
+  <% end %>
+</div>
 
 <nav id="mode">
-  <% if @logo.description? and @logo.description isnt "": %>
-    <a href="#" class="toggle">Info</a><br>
-  <% end %>
   <a href="#/<%= @channel.slug %>/mode:grid">Grid</a>
   <a href="#/<%= @channel.slug %>/mode:list">List</a>
-  
 </nav>
+

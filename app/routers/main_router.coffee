@@ -16,7 +16,6 @@ class exports.MainRouter extends Backbone.Router
     @channel = new Channel()
 
   index: ->
-    console.log 'here'
     $('#container').html require 'views/templates/front'
 
   collection: (slug, mode) ->
