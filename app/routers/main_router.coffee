@@ -38,8 +38,6 @@ class exports.MainRouter extends Backbone.Router
     window.scroll(0,0)
 
     $.when(@channel.maybeLoad slug, true).then =>
-      console.log('here', @channel)
-      console.log('thing', @channel.contents.get id)
 
       @singleView = new SingleView
         logo        : @channel.logo
