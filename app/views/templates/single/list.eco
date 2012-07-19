@@ -64,7 +64,7 @@
   <!-- CONNECTIONS -->
   <div class="connections">
     <% if @block.connections.length > 1 : %>
-      <h4>also found in:</h4>
+      <h4>ALSO FOUND IN</h4>
       <ul>
       <% for connection in @block.connections: %>
         <% if connection.channel_id isnt @channel.id and connection.channel.published isnt false : %>

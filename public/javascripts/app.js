@@ -766,7 +766,7 @@
         __out.push('\') no-repeat center center;">\n  </div>\n');
       } else {
         __out.push('\n  <div id="channel-title">\n      <span class="bigtitle">');
-        __out.push(__sanitize(this.logo.content));
+        __out.push(this.logo.content);
         __out.push('</span>\n  </div>\n');
       }
     
@@ -781,9 +781,7 @@
       __out.push('\n\n  ');
     
       if ((this.logo.description != null) && this.logo.description !== "") {
-        __out.push('\n    <div id="info-toggle"> \n    <a id="question" href="#" class="toggle">about: ');
-        __out.push(__sanitize(this.logo.title));
-        __out.push('</a>\n    </div>\n  ');
+        __out.push('\n    <div id="info-toggle"> \n      <a id="question" href="#" class="toggle">i</a>\n    </div>\n  ');
       }
     
       __out.push('\n</div>\n\n<nav id="mode">\n  <a href="#/');
@@ -847,6 +845,58 @@
     (function() {
     
       __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="grid"></div>\n');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/collection/list": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
     
     }).call(this);
     
@@ -952,6 +1002,86 @@
       }
     
       __out.push('\n</div>\n');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/single/grid": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      __out.push('<div class="thumb">\n  ');
+    
+      if (this.block.image.thumb) {
+        __out.push('\n    <div class="image">\n      <a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('/show:');
+        __out.push(__sanitize(this.block.id));
+        __out.push('">\n        <img src="');
+        __out.push(__sanitize(this.block.image.thumb));
+        __out.push('" alt="');
+        __out.push(__sanitize(this.block.title));
+        __out.push('" />\n      </a>\n    </div>\n  ');
+      } else if (this.block.title) {
+        __out.push('\n    <a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('/show:');
+        __out.push(__sanitize(this.block.id));
+        __out.push('">\n      ');
+        __out.push(__sanitize(_.str.prune(this.block.title, 30)));
+        __out.push('\n    </a>\n  ');
+      } else {
+        __out.push('\n    <a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('/show:');
+        __out.push(__sanitize(this.block.id));
+        __out.push('">\n      Untitled\n    </a>\n  ');
+      }
+    
+      __out.push('\n</div>');
     
     }).call(this);
     
@@ -1097,7 +1227,7 @@
       __out.push('\n\n  <!-- CONNECTIONS -->\n  <div class="connections">\n    ');
     
       if (this.block.connections.length > 1) {
-        __out.push('\n      <h4>also found in:</h4>\n      <ul>\n      ');
+        __out.push('\n      <h4>ALSO FOUND IN</h4>\n      <ul>\n      ');
         _ref = this.block.connections;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           connection = _ref[_i];
@@ -1115,138 +1245,6 @@
       }
     
       __out.push('\n  </div>\n</aside>\n');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
-  "views/templates/single/grid": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-    
-      __out.push('<div class="thumb">\n  ');
-    
-      if (this.block.image.thumb) {
-        __out.push('\n    <div class="image">\n      <a href="#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('/show:');
-        __out.push(__sanitize(this.block.id));
-        __out.push('">\n        <img src="');
-        __out.push(__sanitize(this.block.image.thumb));
-        __out.push('" alt="');
-        __out.push(__sanitize(this.block.title));
-        __out.push('" />\n      </a>\n    </div>\n  ');
-      } else if (this.block.title) {
-        __out.push('\n    <a href="#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('/show:');
-        __out.push(__sanitize(this.block.id));
-        __out.push('">\n      ');
-        __out.push(__sanitize(_.str.prune(this.block.title, 30)));
-        __out.push('\n    </a>\n  ');
-      } else {
-        __out.push('\n    <a href="#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('/show:');
-        __out.push(__sanitize(this.block.id));
-        __out.push('">\n      Untitled\n    </a>\n  ');
-      }
-    
-      __out.push('\n</div>');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
-  "views/templates/collection/list": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-    
-      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
     
     }).call(this);
     

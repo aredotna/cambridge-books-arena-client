@@ -3,7 +3,7 @@
   </div>
 <% else: %>
   <div id="channel-title">
-      <span class="bigtitle"><%= @logo.content %></span>
+      <span class="bigtitle"><%- @logo.content %></span>
   </div>
 <% end %>
 
@@ -19,7 +19,7 @@
 
   <% if @logo.description? and @logo.description isnt "": %>
     <div id="info-toggle"> 
-    <a id="question" href="#" class="toggle">about: <%= @logo.title %></a>
+      <a id="question" href="#" class="toggle">i</a>
     </div>
   <% end %>
 </div>
