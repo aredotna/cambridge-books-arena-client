@@ -5,12 +5,7 @@ class exports.Blocks extends Backbone.Collection
 
   initialize: ->
   
-  comparator: (model) -> 
-    if model.channelConnection()?
-      model.channelConnection().position
-    else
-      date = new Date(@get('created_at'))
-      - date.valueOf()
+  comparator: (model) -> model.get 'position'
 
   filtered: (criteria) ->
     new exports.Blocks(@select(criteria))

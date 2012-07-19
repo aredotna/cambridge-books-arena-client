@@ -172,13 +172,7 @@
     Blocks.prototype.initialize = function() {};
 
     Blocks.prototype.comparator = function(model) {
-      var date;
-      if (model.channelConnection() != null) {
-        return model.channelConnection().position;
-      } else {
-        date = new Date(this.get('created_at'));
-        return -date.valueOf();
-      }
+      return model.get('position');
     };
 
     Blocks.prototype.filtered = function(criteria) {
@@ -428,7 +422,7 @@
           _this.collectionView = new CollectionView({
             logo: _this.channel.logo,
             model: _this.channel,
-            collection: _this.channel.contents.bySelection().byNewest(),
+            collection: _this.channel.contents.bySelection(),
             mode: app.mode
           });
           return $('#container').attr('class', 'collection').html(_this.collectionView.render().el);
@@ -457,6 +451,43 @@
     return MainRouter;
 
   })(Backbone.Router);
+
+}).call(this);
+
+  }
+}));
+(this.require.define({
+  "views/block_view": function(exports, require, module) {
+    (function() {
+  var __hasProp = Object.prototype.hasOwnProperty,
+    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+  exports.BlockView = (function(_super) {
+
+    __extends(BlockView, _super);
+
+    function BlockView() {
+      BlockView.__super__.constructor.apply(this, arguments);
+    }
+
+    BlockView.prototype.className = "block full";
+
+    BlockView.prototype.initialize = function() {
+      return this.template = require("./templates/single/" + this.options.mode);
+    };
+
+    BlockView.prototype.render = function() {
+      this.$el.html(this.template({
+        mode: this.options.mode,
+        channel: this.options.channel.toJSON(),
+        block: this.model.toJSON()
+      }));
+      return this;
+    };
+
+    return BlockView;
+
+  })(Backbone.View);
 
 }).call(this);
 
@@ -531,43 +562,6 @@
     };
 
     return CollectionView;
-
-  })(Backbone.View);
-
-}).call(this);
-
-  }
-}));
-(this.require.define({
-  "views/block_view": function(exports, require, module) {
-    (function() {
-  var __hasProp = Object.prototype.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
-
-  exports.BlockView = (function(_super) {
-
-    __extends(BlockView, _super);
-
-    function BlockView() {
-      BlockView.__super__.constructor.apply(this, arguments);
-    }
-
-    BlockView.prototype.className = "block full";
-
-    BlockView.prototype.initialize = function() {
-      return this.template = require("./templates/single/" + this.options.mode);
-    };
-
-    BlockView.prototype.render = function() {
-      this.$el.html(this.template({
-        mode: this.options.mode,
-        channel: this.options.channel.toJSON(),
-        block: this.model.toJSON()
-      }));
-      return this;
-    };
-
-    return BlockView;
 
   })(Backbone.View);
 
@@ -863,58 +857,6 @@
   }
 }));
 (this.require.define({
-  "views/templates/collection/list": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-    
-      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
   "views/templates/collection/menu": function(exports, require, module) {
     module.exports = function (__obj) {
   if (!__obj) __obj = {};
@@ -1010,86 +952,6 @@
       }
     
       __out.push('\n</div>\n');
-    
-    }).call(this);
-    
-  }).call(__obj);
-  __obj.safe = __objSafe, __obj.escape = __escape;
-  return __out.join('');
-}
-  }
-}));
-(this.require.define({
-  "views/templates/single/grid": function(exports, require, module) {
-    module.exports = function (__obj) {
-  if (!__obj) __obj = {};
-  var __out = [], __capture = function(callback) {
-    var out = __out, result;
-    __out = [];
-    callback.call(this);
-    result = __out.join('');
-    __out = out;
-    return __safe(result);
-  }, __sanitize = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else if (typeof value !== 'undefined' && value != null) {
-      return __escape(value);
-    } else {
-      return '';
-    }
-  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-  __safe = __obj.safe = function(value) {
-    if (value && value.ecoSafe) {
-      return value;
-    } else {
-      if (!(typeof value !== 'undefined' && value != null)) value = '';
-      var result = new String(value);
-      result.ecoSafe = true;
-      return result;
-    }
-  };
-  if (!__escape) {
-    __escape = __obj.escape = function(value) {
-      return ('' + value)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    };
-  }
-  (function() {
-    (function() {
-    
-      __out.push('<div class="thumb">\n  ');
-    
-      if (this.block.image.thumb) {
-        __out.push('\n    <div class="image">\n      <a href="#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('/show:');
-        __out.push(__sanitize(this.block.id));
-        __out.push('">\n        <img src="');
-        __out.push(__sanitize(this.block.image.thumb));
-        __out.push('" alt="');
-        __out.push(__sanitize(this.block.title));
-        __out.push('" />\n      </a>\n    </div>\n  ');
-      } else if (this.block.title) {
-        __out.push('\n    <a href="#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('/show:');
-        __out.push(__sanitize(this.block.id));
-        __out.push('">\n      ');
-        __out.push(__sanitize(_.str.prune(this.block.title, 30)));
-        __out.push('\n    </a>\n  ');
-      } else {
-        __out.push('\n    <a href="#/');
-        __out.push(__sanitize(this.channel.slug));
-        __out.push('/show:');
-        __out.push(__sanitize(this.block.id));
-        __out.push('">\n      Untitled\n    </a>\n  ');
-      }
-    
-      __out.push('\n</div>');
     
     }).call(this);
     
@@ -1253,6 +1115,138 @@
       }
     
       __out.push('\n  </div>\n</aside>\n');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/single/grid": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      __out.push('<div class="thumb">\n  ');
+    
+      if (this.block.image.thumb) {
+        __out.push('\n    <div class="image">\n      <a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('/show:');
+        __out.push(__sanitize(this.block.id));
+        __out.push('">\n        <img src="');
+        __out.push(__sanitize(this.block.image.thumb));
+        __out.push('" alt="');
+        __out.push(__sanitize(this.block.title));
+        __out.push('" />\n      </a>\n    </div>\n  ');
+      } else if (this.block.title) {
+        __out.push('\n    <a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('/show:');
+        __out.push(__sanitize(this.block.id));
+        __out.push('">\n      ');
+        __out.push(__sanitize(_.str.prune(this.block.title, 30)));
+        __out.push('\n    </a>\n  ');
+      } else {
+        __out.push('\n    <a href="#/');
+        __out.push(__sanitize(this.channel.slug));
+        __out.push('/show:');
+        __out.push(__sanitize(this.block.id));
+        __out.push('">\n      Untitled\n    </a>\n  ');
+      }
+    
+      __out.push('\n</div>');
+    
+    }).call(this);
+    
+  }).call(__obj);
+  __obj.safe = __objSafe, __obj.escape = __escape;
+  return __out.join('');
+}
+  }
+}));
+(this.require.define({
+  "views/templates/collection/list": function(exports, require, module) {
+    module.exports = function (__obj) {
+  if (!__obj) __obj = {};
+  var __out = [], __capture = function(callback) {
+    var out = __out, result;
+    __out = [];
+    callback.call(this);
+    result = __out.join('');
+    __out = out;
+    return __safe(result);
+  }, __sanitize = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else if (typeof value !== 'undefined' && value != null) {
+      return __escape(value);
+    } else {
+      return '';
+    }
+  }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+  __safe = __obj.safe = function(value) {
+    if (value && value.ecoSafe) {
+      return value;
+    } else {
+      if (!(typeof value !== 'undefined' && value != null)) value = '';
+      var result = new String(value);
+      result.ecoSafe = true;
+      return result;
+    }
+  };
+  if (!__escape) {
+    __escape = __obj.escape = function(value) {
+      return ('' + value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    };
+  }
+  (function() {
+    (function() {
+    
+      __out.push('<div id="modal" class="hide"></div>\n<div id="blocks" class="list"></div>\n');
     
     }).call(this);
     
