@@ -6,49 +6,35 @@
 
 <article>
   <% if @block.block_type is 'Media': %>
-    <!-- MEDIA -->
     <div class="embed">
-      <% if @block.embed_html: %>
-        <%- @block.embed_html %>
-      <% else: %>
-        <a href="<%= @block.embed_source_url %>" class="url external">
-          <%= @block.embed_source_url %>
-        </a>
-      <% end %>
+      <%- @block.embed_html %>
     </div>
-  <% else if @block.block_type is 'Image': %>
-    <!-- IMAGE -->
 
+  <% else if @block.block_type is 'Image': %>
     <a href="<%= @block.image.original %>" class="enlarge">
       <img src="<%= @block.image.display %>" alt="<%= @block.title %>" />
     </a>
+
   <% else if @block.block_type is 'Link': %>
-    <!-- LINK -->
-    <% if @block.image_display: %>
-      <a href="<%= @block.link_url %>" class="external" target="_blank">
-        <img src="<%= @block.image.display %>" alt="<%= @block.title %>" />
-      </a>
-    <% else: %>
-      <p>
-        <a href="<%= @block.link_url %>" class="external url" target="_blank"><%= @block.link_url %></a>
-      </p>
-    <% end %>
+    <a href="<%= @block.link_url %>" class="external" target="_blank">
+      <img src="<%= @block.image.display %>" alt="<%= @block.title %>" />
+    </a>
+
   <% else if @block.block_type is 'Text': %>
-    <!-- TEXT -->
     <div class="content">
       <%- @block.content %>
     </div>
+
   <% else if @block.block_type is 'Channel': %>
-    <!-- CHANNEL -->
       <a href="#/<%= @block.slug %>"><%- @block.title %></a>
   <% end %>
 </article>
 
 <aside>
-  <!-- METADATA -->
   <% if @block.title?: %>
     <h4><a href="#/<%= @channel.slug %>/show:<%= @block.id %>"><%- @block.title %></a></h4>
   <% end %>
+
   <% unless @block.block_type is 'Text' or !@block.description: %>
     <div class="description">
       <%- @block.description %>
@@ -61,7 +47,6 @@
     </p>
   <% end %>
 
-  <!-- CONNECTIONS -->
   <div class="connections">
     <% if @block.connections.length > 1 : %>
       <h4>ALSO FOUND IN</h4>
