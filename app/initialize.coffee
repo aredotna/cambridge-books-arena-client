@@ -8,13 +8,14 @@ class exports.Application extends BrunchApplication
     @loading().start()
     @mode = 'list'
     @menu = new Channel()
+
     
     # load initial menu and then start loading channels
 
-    $.when(@menu.maybeLoad "cambridge-book", false).then =>
+    $.when(@menu.maybeLoad "cambridge-book--2", false).then =>
       menuView = new MenuView
         model       : @menu
-        collection  : @menu.contents.bySelection()
+        collection  : @menu.contents
 
       $('#menu').html menuView.render().el
       @router = new MainRouter

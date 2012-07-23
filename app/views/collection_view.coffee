@@ -34,7 +34,7 @@ class exports.CollectionView extends Backbone.View
 
   render: ->
     @$el.html @logo
-      logo    : @options.logo.toJSON()
+      logo    : @options.logo?.toJSON()
       channel : @model.toJSON()
 
     @$el.append @template

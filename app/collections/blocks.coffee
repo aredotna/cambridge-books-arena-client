@@ -39,7 +39,7 @@ class exports.Blocks extends Backbone.Collection
     @at @indexOf(model) - 1
 
   cleanConnections: ->
-    menu_channels = app.menu.contents.where({type:'Channel'}).map((model)-> model.id)
+    menu_channels = app.menu.contents
 
     @each (model)->
       connections = _.filter model.get('connections'), (connection)-> 

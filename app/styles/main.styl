@@ -76,7 +76,6 @@ hr
   user-select: none;
   position: fixed
   top: 0
-  bottom: 0
   left: 0
   width: sidebar_width
   overflow-y: hidden
@@ -84,6 +83,10 @@ hr
   background-color: white
   padding: base_line_height
   font-size: base_font_size - 2
+  position fixed
+  top 0px
+  left 0px
+  width 100%
   .Text
     font-family: sans-serif
     margin-top: base_line_height
@@ -91,6 +94,20 @@ hr
     width: 100%
     height: 116px
     cursor: pointer
+  div.block
+    display inline-block
+    margin-right 20px
+
+#subnav
+  display none
+  background-color blue
+  opacity .5
+  font-size 18px
+  color white
+  li
+    display inline-block
+    margin 10px
+
 
 #container
   min-height: 100%
@@ -98,6 +115,8 @@ hr
   padding: base_line_height
   &.loading
     background: #fff url('../images/loader.gif') center center no-repeat
+    #collection
+      display none
 
 // CHANNEL HEADER
 // ----

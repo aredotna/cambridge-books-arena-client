@@ -1,9 +1,10 @@
-<div class="logo" style="background: transparent url('<%= @logo.image.display %>') no-repeat left top;">
-</div>
+<!-- <div class="logo" style="background: transparent url('<%= @logo.image.display %>') no-repeat left top;">
+</div> -->
 
 <div id="menu-contents">
+  <div id="subnav"></div>
   <% for block in @blocks: %>
-    <div class="block <%- block.block_type %>">
+    <div class="block <%- block.block_type %>" id="<%- block.id %>-menuItem">
       <% if block.block_type is 'Image': %>
         <!-- IMAGE -->
         <img src="<%= block.image.display %>" alt="<%= block.title %>" />
@@ -22,9 +23,9 @@
           <%- block.content %>
         </div>
       <% else if block.block_type is 'Channel': %>
-        <!-- TEXT -->
+        <!-- CHANNEL -->
           <% if block.published is true: %>
-            <a href="#/<%= block.slug %>"><%- block.title %></a>
+            <a class="channelLink" data-slug="<%- block.slug %>" href="#/<%= block.slug %>"><%- block.title %></a>
           <% end %>
       <% end %>
     </div>

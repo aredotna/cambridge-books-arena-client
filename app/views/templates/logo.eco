@@ -1,4 +1,4 @@
-<% if @logo.image?.thumb : %>
+<% if @logo?.image?.thumb : %>
   <div id="channel-title" style="background: transparent url('<%= @logo.image.thumb %>') no-repeat center center;">
   </div>
 <% else: %>

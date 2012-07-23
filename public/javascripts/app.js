@@ -144,11 +144,7 @@ window.require.define({"collections/blocks": function(exports, require, module) 
 
       Blocks.prototype.cleanConnections = function() {
         var menu_channels;
-        menu_channels = app.menu.contents.where({
-          type: 'Channel'
-        }).map(function(model) {
-          return model.id;
-        });
+        menu_channels = app.menu.contents;
         return this.each(function(model) {
           var connections;
           connections = _.filter(model.get('connections'), function(connection) {
@@ -188,7 +184,7 @@ window.require.define({"helpers": function(exports, require, module) {
       BrunchApplication.prototype.loading = function() {
         return {
           start: function() {
-            return $('#container').html('').addClass('loading');
+            return $('#container').addClass('loading');
           },
           stop: function() {
             return $('#container').removeClass('loading');
@@ -231,11 +227,11 @@ window.require.define({"initialize": function(exports, require, module) {
         this.loading().start();
         this.mode = 'list';
         this.menu = new Channel();
-        return $.when(this.menu.maybeLoad("cambridge-book", false)).then(function() {
+        return $.when(this.menu.maybeLoad("cambridge-book--2", false)).then(function() {
           var menuView;
           menuView = new MenuView({
             model: _this.menu,
-            collection: _this.menu.contents.bySelection()
+            collection: _this.menu.contents
           });
           $('#menu').html(menuView.render().el);
           _this.router = new MainRouter;
@@ -335,7 +331,7 @@ window.require.define({"models/channel": function(exports, require, module) {
       }
 
       Channel.prototype.url = function() {
-        return "http://are.na/api/v1/channels/" + (this.get('slug')) + ".json?callback=?";
+        return "http://arena-cedar.herokuapp.com/api/v1/channels/" + (this.get('slug')) + ".json?callback=?";
       };
 
       Channel.prototype.maybeLoad = function(slug, logo) {
@@ -344,13 +340,12 @@ window.require.define({"models/channel": function(exports, require, module) {
         if (slug === this.get('slug')) {
           return true;
         } else {
-          this.clear();
-          app.loading().start();
           this.set('slug', slug);
           return this.fetch({
             success: function() {
               _this.setupBlocks(logo);
               app.loading().stop();
+              _this.clear();
               return true;
             },
             error: function(error) {
@@ -369,6 +364,12 @@ window.require.define({"models/channel": function(exports, require, module) {
         if (logo) return this.logo = this.contents.shift();
       };
 
+      Channel.prototype.containsChannels = function() {
+        return this.contents.where({
+          block_type: "Channel"
+        }).length !== 0;
+      };
+
       return Channel;
 
     })(Backbone.Model);
@@ -379,9 +380,11 @@ window.require.define({"models/channel": function(exports, require, module) {
 
 window.require.define({"routers/main_router": function(exports, require, module) {
   (function() {
-    var BlockView, Channel, CollectionView, MenuView, SingleView,
+    var BlockView, Channel, CollectionView, MenuView, SingleView, SubnavView,
       __hasProp = Object.prototype.hasOwnProperty,
       __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+    Channel = require('models/channel').Channel;
 
     BlockView = require('views/block_view').BlockView;
 
@@ -391,7 +394,7 @@ window.require.define({"routers/main_router": function(exports, require, module)
 
     CollectionView = require('views/collection_view').CollectionView;
 
-    Channel = require('models/channel').Channel;
+    SubnavView = require('views/subnav_view').SubnavView;
 
     exports.MainRouter = (function(_super) {
 
@@ -410,7 +413,8 @@ window.require.define({"routers/main_router": function(exports, require, module)
       };
 
       MainRouter.prototype.initialize = function() {
-        return this.channel = new Channel();
+        this.channel = new Channel();
+        return this.subnavView = new SubnavView();
       };
 
       MainRouter.prototype.index = function() {
@@ -420,16 +424,26 @@ window.require.define({"routers/main_router": function(exports, require, module)
       MainRouter.prototype.collection = function(slug, mode) {
         var _this = this;
         window.scroll(0, 0);
+        this.subnavView.close();
         if (app.mode !== mode && (mode != null)) app.mode = mode;
         if (slug != null) {
           return $.when(this.channel.maybeLoad(slug, true)).then(function() {
-            _this.collectionView = new CollectionView({
-              logo: _this.channel.logo,
-              model: _this.channel,
-              collection: _this.channel.contents.bySelection(),
-              mode: app.mode
-            });
-            return $('#container').attr('class', 'collection').html(_this.collectionView.render().el);
+            if (_this.channel.containsChannels()) {
+              _.extend(_this.subnavView, {
+                model: _this.channel,
+                collection: _this.channel.contents
+              });
+              _this.subnavView.open();
+              return app.loading().stop();
+            } else {
+              _this.collectionView = new CollectionView({
+                logo: _this.channel.logo,
+                model: _this.channel,
+                collection: _this.channel.contents.bySelection(),
+                mode: app.mode
+              });
+              return $('#container').attr('class', 'collection').html(_this.collectionView.render().el);
+            }
           });
         }
       };
@@ -551,8 +565,9 @@ window.require.define({"views/collection_view": function(exports, require, modul
       };
 
       CollectionView.prototype.render = function() {
+        var _ref;
         this.$el.html(this.logo({
-          logo: this.options.logo.toJSON(),
+          logo: (_ref = this.options.logo) != null ? _ref.toJSON() : void 0,
           channel: this.model.toJSON()
         }));
         this.$el.append(this.template({
@@ -573,12 +588,16 @@ window.require.define({"views/collection_view": function(exports, require, modul
 
 window.require.define({"views/menu_view": function(exports, require, module) {
   (function() {
-    var BlockView,
+    var BlockView, Channel, SubnavView,
       __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
       __hasProp = Object.prototype.hasOwnProperty,
       __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
 
     BlockView = require('views/block_view').BlockView;
+
+    SubnavView = require('views/subnav_view').SubnavView;
+
+    Channel = require('models/channel').Channel;
 
     exports.MenuView = (function(_super) {
 
@@ -603,6 +622,21 @@ window.require.define({"views/menu_view": function(exports, require, module) {
         return this.$('#menu-contents').toggleClass('hide');
       };
 
+      MenuView.prototype.openSubnav = function(e) {
+        var _this = this;
+        this.subnavChannel || (this.subnavChannel = new Channel);
+        this.subnavView || (this.subnavView = new SubnavView({
+          el: $('#subnav')
+        }));
+        this.subnavView.close();
+        $.when(this.subnavChannel.maybeLoad($(e.target).data('slug'), false)).then(function() {
+          _this.subnavView.model = _this.subnavChannel;
+          _this.subnavView.collection = _this.subnavChannel.contents;
+          return _this.subnavView.open();
+        });
+        return false;
+      };
+
       MenuView.prototype.addAll = function() {
         return this.collection.each(this.addOne);
       };
@@ -619,12 +653,14 @@ window.require.define({"views/menu_view": function(exports, require, module) {
       };
 
       MenuView.prototype.render = function() {
-        this.logo = this.collection.shift();
+        var _ref;
+        this.logo = this.collection.bySelection().at(0);
         this.$el.html(this.template({
           channel: this.model.toJSON(),
           logo: this.logo.toJSON(),
           blocks: this.collection.toJSON()
         }));
+        if ((_ref = this.subnavView) != null) _ref.render();
         this.addAll();
         return this;
       };
@@ -677,6 +713,49 @@ window.require.define({"views/single_view": function(exports, require, module) {
       return SingleView;
 
     })(BlockView);
+
+  }).call(this);
+  
+}});
+
+window.require.define({"views/subnav_view": function(exports, require, module) {
+  (function() {
+    var __hasProp = Object.prototype.hasOwnProperty,
+      __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor; child.__super__ = parent.prototype; return child; };
+
+    exports.SubnavView = (function(_super) {
+
+      __extends(SubnavView, _super);
+
+      function SubnavView() {
+        SubnavView.__super__.constructor.apply(this, arguments);
+      }
+
+      SubnavView.prototype.initialize = function() {
+        this.itemId = this.options.itemId;
+        return this.template = require("./templates/collection/subnav");
+      };
+
+      SubnavView.prototype.events = {};
+
+      SubnavView.prototype.open = function() {
+        this.render();
+        return $('#subnav').slideDown();
+      };
+
+      SubnavView.prototype.close = function() {
+        return $('#subnav').slideUp();
+      };
+
+      SubnavView.prototype.render = function() {
+        return $('#subnav').html(this.template({
+          blocks: this.collection.toJSON()
+        }));
+      };
+
+      return SubnavView;
+
+    })(Backbone.View);
 
   }).call(this);
   
@@ -826,18 +905,20 @@ window.require.define({"views/templates/collection/menu": function(exports, requ
       (function() {
         var block, _i, _len, _ref;
       
-        __out.push('<div class="logo" style="background: transparent url(\'');
+        __out.push('<!-- <div class="logo" style="background: transparent url(\'');
       
         __out.push(__sanitize(this.logo.image.display));
       
-        __out.push('\') no-repeat left top;">\n</div>\n\n<div id="menu-contents">\n  ');
+        __out.push('\') no-repeat left top;">\n</div> -->\n\n<div id="menu-contents">\n  <div id="subnav"></div>\n  ');
       
         _ref = this.blocks;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           block = _ref[_i];
           __out.push('\n    <div class="block ');
           __out.push(block.block_type);
-          __out.push('">\n      ');
+          __out.push('" id="');
+          __out.push(block.id);
+          __out.push('-menuItem">\n      ');
           if (block.block_type === 'Image') {
             __out.push('\n        <!-- IMAGE -->\n        <img src="');
             __out.push(__sanitize(block.image.display));
@@ -865,9 +946,11 @@ window.require.define({"views/templates/collection/menu": function(exports, requ
             __out.push(block.content);
             __out.push('\n        </div>\n      ');
           } else if (block.block_type === 'Channel') {
-            __out.push('\n        <!-- TEXT -->\n          ');
+            __out.push('\n        <!-- CHANNEL -->\n          ');
             if (block.published === true) {
-              __out.push('\n            <a href="#/');
+              __out.push('\n            <a class="channelLink" data-slug="');
+              __out.push(block.slug);
+              __out.push('" href="#/');
               __out.push(__sanitize(block.slug));
               __out.push('">');
               __out.push(block.title);
@@ -879,6 +962,64 @@ window.require.define({"views/templates/collection/menu": function(exports, requ
         }
       
         __out.push('\n</div>\n');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  }
+}});
+
+window.require.define({"views/templates/collection/subnav": function(exports, require, module) {
+  module.exports = function (__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+        var block, _i, _len, _ref;
+      
+        _ref = this.blocks;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          block = _ref[_i];
+          __out.push('\n\t<li class="block">');
+          __out.push(block.title);
+          __out.push('</li>\n');
+        }
       
       }).call(this);
       
@@ -929,7 +1070,7 @@ window.require.define({"views/templates/front": function(exports, require, modul
     (function() {
       (function() {
       
-        __out.push('<<<<<<< HEAD\nmeow\n=======\n<div class="whitepaper">\n  <div class="home">\n      <p class="connections"></p>\n      <p>Cambridge Book is an art book collection and consultancy directed by Carson Salter with Sandeep Bhuller.</p>\n\n      <p>Operating under the credo NOT TOO MUCH, the firm draws on expertise from the MIT & Harvard communities, offering buying and publishing consultation and developing variable forms of information service.</p>\n      <p class="connections"><em>carson.salter[at]gmail ● sandeep.k.bhuller[at]gmail</em>  \n      <br>\n      <br>\n      <a href="#/mit-office-e14-140s">ENTER</a>\n      </p>\n\n      <br>\n  </div>\n</div>\n>>>>>>> 4eb5b99669b271d295a38571333ef4964eee1924\n');
+        __out.push('<div class="whitepaper">\n  <div class="home">\n      <p class="connections"></p>\n      <p>Cambridge Book is an art book collection and consultancy directed by Carson Salter with Sandeep Bhuller.</p>\n\n      <p>Operating under the credo NOT TOO MUCH, the firm draws on expertise from the MIT & Harvard communities, offering buying and publishing consultation and developing variable forms of information service.</p>\n      <p class="connections"><em>carson.salter[at]gmail ● sandeep.k.bhuller[at]gmail</em>  \n      <br>\n      <br>\n      <a href="#/mit-office-e14-140s">ENTER</a>\n      </p>\n\n      <br>\n  </div>\n</div>\n');
       
       }).call(this);
       
@@ -979,9 +1120,9 @@ window.require.define({"views/templates/logo": function(exports, require, module
     }
     (function() {
       (function() {
-        var _ref;
+        var _ref, _ref2;
       
-        if ((_ref = this.logo.image) != null ? _ref.thumb : void 0) {
+        if ((_ref = this.logo) != null ? (_ref2 = _ref.image) != null ? _ref2.thumb : void 0 : void 0) {
           __out.push('\n  <div id="channel-title" style="background: transparent url(\'');
           __out.push(__sanitize(this.logo.image.thumb));
           __out.push('\') no-repeat center center;">\n  </div>\n');

@@ -1,4 +1,6 @@
 {BlockView}     = require 'views/block_view'
+{SubnavView}    = require 'views/subnav_view'
+{Channel}       = require 'models/channel'
 
 class exports.MenuView extends Backbone.View
   id: 'collection'
@@ -6,11 +8,25 @@ class exports.MenuView extends Backbone.View
   initialize: -> 
     @template = require "./templates/collection/menu"
 
+
   events:
     'click .logo' : 'toggleMenu'
+    #'click .channelLink' : 'openSubnav' 
 
   toggleMenu: ->
     @$('#menu-contents').toggleClass 'hide'
+
+  openSubnav: (e)->
+    @subnavChannel ||= new Channel
+    @subnavView ||= new SubnavView(el:$('#subnav'))
+
+    @subnavView.close()
+    $.when(@subnavChannel.maybeLoad $(e.target).data('slug'), false).then =>
+      @subnavView.model = @subnavChannel
+      @subnavView.collection = @subnavChannel.contents
+      @subnavView.open()
+
+    false
 
   addAll: ->
     @collection.each @addOne
@@ -25,13 +41,14 @@ class exports.MenuView extends Backbone.View
     @$('#blocks').append view.render().el
 
   render: ->
-    @logo = @collection.shift()
+    @logo = @collection.bySelection().at(0)
 
     @$el.html @template
       channel : @model.toJSON()
       logo    : @logo.toJSON()
       blocks  : @collection.toJSON()
 
+    @subnavView?.render()
     @addAll()
 
     return this

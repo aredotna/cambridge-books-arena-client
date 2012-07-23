@@ -1,4 +1,6 @@
+
 class exports.Block extends Backbone.Model
+
   initialize: ->
     @checkIfMissingImage()
     @setArrangementPosition()
@@ -22,3 +24,5 @@ class exports.Block extends Backbone.Model
     else
       @set({arrangement: false})
       return false
+
+

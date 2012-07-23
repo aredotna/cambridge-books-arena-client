@@ -1,0 +1,3 @@
+<% for block in @blocks: %>
+	<li class="block"><%- block.title %></li>
+<% end %>

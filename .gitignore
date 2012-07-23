@@ -1,2 +1,5 @@
 .DS_Store
 /public
+
+*.sublime-project
+*.sublime-workspace

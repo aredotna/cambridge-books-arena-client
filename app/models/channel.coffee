@@ -3,19 +3,19 @@
 class exports.Channel extends Backbone.Model
 
   url: ->
-    "http://are.na/api/v1/channels/#{@get('slug')}.json?callback=?"
+    "http://arena-cedar.herokuapp.com/api/v1/channels/#{@get('slug')}.json?callback=?"
 
   maybeLoad: (slug, logo = false) ->
     if slug is @get('slug')
       return true
     else
-      @clear()
-      app.loading().start()
+      #app.loading().start()
       @set 'slug', slug
       @.fetch
         success: =>
           @setupBlocks(logo)
           app.loading().stop()
+          @clear()
           return true
         error: (error) =>
           console.log "Error: #{error}"
@@ -27,3 +27,6 @@ class exports.Channel extends Backbone.Model
     @contents.add(@get('channels'))
     @contents.cleanConnections() if logo
     @logo = @contents.shift() if logo
+
+  containsChannels: ->
+    @contents.where(block_type:"Channel").length != 0
