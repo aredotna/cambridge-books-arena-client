@@ -8,25 +8,11 @@ class exports.MenuView extends Backbone.View
   initialize: -> 
     @template = require "./templates/collection/menu"
 
-
   events:
     'click .logo' : 'toggleMenu'
-    #'click .channelLink' : 'openSubnav' 
 
   toggleMenu: ->
     @$('#menu-contents').toggleClass 'hide'
-
-  openSubnav: (e)->
-    @subnavChannel ||= new Channel
-    @subnavView ||= new SubnavView(el:$('#subnav'))
-
-    @subnavView.close()
-    $.when(@subnavChannel.maybeLoad $(e.target).data('slug'), false).then =>
-      @subnavView.model = @subnavChannel
-      @subnavView.collection = @subnavChannel.contents
-      @subnavView.open()
-
-    false
 
   addAll: ->
     @collection.each @addOne
@@ -48,7 +34,6 @@ class exports.MenuView extends Backbone.View
       logo    : @logo.toJSON()
       blocks  : @collection.toJSON()
 
-    @subnavView?.render()
     @addAll()
 
     return this

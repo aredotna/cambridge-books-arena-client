@@ -10,12 +10,12 @@ class exports.Channel extends Backbone.Model
       return true
     else
       #app.loading().start()
+      @clear()
       @set 'slug', slug
       @.fetch
         success: =>
           @setupBlocks(logo)
           app.loading().stop()
-          @clear()
           return true
         error: (error) =>
           console.log "Error: #{error}"

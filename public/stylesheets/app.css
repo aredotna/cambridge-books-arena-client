@@ -215,7 +215,8 @@ hr{color:#f0f0f0;background-color:#f0f0f0;height:1px}
 #menu .Text{font-family:sans-serif;margin-top:20px}
 #menu .logo{width:100%;height:116px;cursor:pointer}
 #menu div.block{display:inline-block;margin-right:20px}
-#subnav{display:none;background-color:#00f;opacity:.5;filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=50);font-size:18px;color:#fff;}
+#subnav{display:none;background-color:#00f;opacity:.5;filter:progid:DXImageTransform.Microsoft.Alpha(Opacity=50);}
+#subnav a{font-family:"Times New Roman",times;font-size:18px;color:#fff}
 #subnav li{display:inline-block;margin:10px}
 #container{min-height:100%;margin-left:180px;padding:20px;}
 #container.loading{background:#fff url("../images/loader.gif") center center no-repeat;}

@@ -340,12 +340,12 @@ window.require.define({"models/channel": function(exports, require, module) {
         if (slug === this.get('slug')) {
           return true;
         } else {
+          this.clear();
           this.set('slug', slug);
           return this.fetch({
             success: function() {
               _this.setupBlocks(logo);
               app.loading().stop();
-              _this.clear();
               return true;
             },
             error: function(error) {
@@ -622,21 +622,6 @@ window.require.define({"views/menu_view": function(exports, require, module) {
         return this.$('#menu-contents').toggleClass('hide');
       };
 
-      MenuView.prototype.openSubnav = function(e) {
-        var _this = this;
-        this.subnavChannel || (this.subnavChannel = new Channel);
-        this.subnavView || (this.subnavView = new SubnavView({
-          el: $('#subnav')
-        }));
-        this.subnavView.close();
-        $.when(this.subnavChannel.maybeLoad($(e.target).data('slug'), false)).then(function() {
-          _this.subnavView.model = _this.subnavChannel;
-          _this.subnavView.collection = _this.subnavChannel.contents;
-          return _this.subnavView.open();
-        });
-        return false;
-      };
-
       MenuView.prototype.addAll = function() {
         return this.collection.each(this.addOne);
       };
@@ -653,14 +638,12 @@ window.require.define({"views/menu_view": function(exports, require, module) {
       };
 
       MenuView.prototype.render = function() {
-        var _ref;
         this.logo = this.collection.bySelection().at(0);
         this.$el.html(this.template({
           channel: this.model.toJSON(),
           logo: this.logo.toJSON(),
           blocks: this.collection.toJSON()
         }));
-        if ((_ref = this.subnavView) != null) _ref.render();
         this.addAll();
         return this;
       };
@@ -916,9 +899,7 @@ window.require.define({"views/templates/collection/menu": function(exports, requ
           block = _ref[_i];
           __out.push('\n    <div class="block ');
           __out.push(block.block_type);
-          __out.push('" id="');
-          __out.push(block.id);
-          __out.push('-menuItem">\n      ');
+          __out.push('">\n      ');
           if (block.block_type === 'Image') {
             __out.push('\n        <!-- IMAGE -->\n        <img src="');
             __out.push(__sanitize(block.image.display));
@@ -948,9 +929,7 @@ window.require.define({"views/templates/collection/menu": function(exports, requ
           } else if (block.block_type === 'Channel') {
             __out.push('\n        <!-- CHANNEL -->\n          ');
             if (block.published === true) {
-              __out.push('\n            <a class="channelLink" data-slug="');
-              __out.push(block.slug);
-              __out.push('" href="#/');
+              __out.push('\n            <a href="#/');
               __out.push(__sanitize(block.slug));
               __out.push('">');
               __out.push(block.title);
@@ -1016,9 +995,11 @@ window.require.define({"views/templates/collection/subnav": function(exports, re
         _ref = this.blocks;
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           block = _ref[_i];
-          __out.push('\n\t<li class="block">');
+          __out.push('\n\t<li class="block"><a href="#/');
+          __out.push(block.slug);
+          __out.push('">');
           __out.push(block.title);
-          __out.push('</li>\n');
+          __out.push('</a></li>\n');
         }
       
       }).call(this);
